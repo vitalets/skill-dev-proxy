@@ -1,32 +1,12 @@
-describe('ShowTargets', () => {
+describe('PingPong', () => {
 
-  const SHOW_TARGETS_KEYWORD = 'Выберите таргет для проксирования';
-
-  it('enter without target', async () => {
+  it('respond with pong', async () => {
     const user = new User();
 
-    await user.enter();
+    await user.say('ping');
 
-    assert.include(user.response.text, SHOW_TARGETS_KEYWORD);
-    assert.equal(user.response.buttons.length, 3);
+    assert.include(user.response.text, 'pong');
   });
 
-  it('enter with invalid target', async () => {
-    const state = { application: { targetName: 'blabla' }};
-    const user = new User('', { state });
-
-    await user.enter();
-
-    assert.include(user.response.text, SHOW_TARGETS_KEYWORD);
-  });
-
-  it('show targets by command', async () => {
-    const state = { application: { targetName: 'локалхост' }};
-    const user = new User();
-
-    await user.say('список таргетов', { state });
-
-    assert.include(user.response.text, SHOW_TARGETS_KEYWORD);
-  });
 });
 

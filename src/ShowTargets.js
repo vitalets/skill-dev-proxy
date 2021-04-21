@@ -11,14 +11,18 @@ module.exports = class ShowTargets extends BaseComponent {
   }
 
   reply() {
-    const response = reply`
-      Выберите таргет для проксирования:
-      ${buttons(this.replyButtons())}
+    this.response = reply`
+      Выберите таргет:
+      ${buttons(this.buttons())}
     `;
-    return { response };
   }
 
-  replyButtons() {
-    return targets.map(target => ({ title: target.name, hide: false }));
+  buttons() {
+    return targets.map(target => {
+      return {
+        title: `Установи таргет ${target.name}`,
+        hide: false
+      };
+    });
   }
 };

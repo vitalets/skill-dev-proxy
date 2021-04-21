@@ -1,14 +1,14 @@
 const logger = require('console-log-level')({ level: process.env.LOG_LEVEL || 'info' });
 const PingPong = require('./PingPong');
 const ShowTargets = require('./ShowTargets');
-// const ChangeTarget = require('./ChangeTarget');
+const SetTarget = require('./SetTarget');
 // const ProxyToUrl = require('./ProxyToUrl');
 // const ProxyToQueue = require('./ProxyToQueue');
 
 const Components = [
   PingPong,
+  SetTarget,
   ShowTargets,
-  // ChangeTarget,
   // ProxyToUrl,
   // ProxyToQueue,
 ];

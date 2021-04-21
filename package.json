@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "test": "LOG_LEVEL=error mocha test/setup test/specs",
+    "init": "mkdir -p .hooks && git config core.hooksPath ./.hooks",
+    "test:log": "mocha test/setup test/specs",
+    "test": "LOG_LEVEL=error npm run test:log",
     "test:dist": "HANDLER_PATH=../dist npm test",
     "build": "webpack"
   },

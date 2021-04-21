@@ -7,7 +7,6 @@ module.exports = class PingPong extends BaseComponent {
   }
 
   reply() {
-    const response = reply`pong`;
-    return { response };
+    this.response = reply`pong`;
   }
 };

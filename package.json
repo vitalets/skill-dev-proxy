@@ -1,0 +1,24 @@
+{
+  "name": "alice-dev-skill",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "test": "LOG_LEVEL=error mocha test/setup test/specs",
+    "test:dist": "HANDLER_PATH=../dist npm test",
+    "build": "webpack"
+  },
+  "dependencies": {
+    "alice-renderer": "^1.1.0",
+    "aws-sdk": "^2.888.0",
+    "console-log-level": "^1.4.1"
+  },
+  "devDependencies": {
+    "alice-tester": "^1.2.0",
+    "chai": "^4.3.4",
+    "copy-webpack-plugin": "^8.1.1",
+    "mocha": "^8.3.2",
+    "webpack": "^5.35.0",
+    "webpack-cli": "^4.6.0",
+    "webpack-node-externals": "^2.5.2"
+  }
+}

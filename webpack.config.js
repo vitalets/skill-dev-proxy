@@ -1,0 +1,36 @@
+const path = require('path');
+const nodeExternals = require('webpack-node-externals');
+const CopyPlugin = require('copy-webpack-plugin');
+
+const outDir = path.resolve(__dirname, 'dist');
+
+module.exports = {
+  mode: 'none',
+  entry: './src/index.js',
+  target: 'node',
+  output: {
+    path: outDir,
+    filename: 'index.js',
+    library: {
+      type: 'commonjs',
+    },
+  },
+  externals: [
+    nodeExternals()
+  ],
+  plugins: [
+    new CopyPlugin({
+      patterns: [
+        { from: 'src/targets.json', to: outDir },
+        { from: 'package.json', to: outDir, transform: removeDevDeps },
+      ],
+    }),
+  ],
+};
+
+function removeDevDeps(content) {
+  content = JSON.parse(content.toString());
+  delete content.devDependencies;
+  delete content.scripts;
+  return JSON.stringify(content, false, 2);
+}

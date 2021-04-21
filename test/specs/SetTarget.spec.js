@@ -2,7 +2,7 @@ describe('SetTarget', () => {
 
   const SET_TARGET_KEYWORD = 'Выбран таргет';
 
-  it.only('set correct target', async () => {
+  it('set correct target', async () => {
     const user = new User();
 
     await user.enter();
@@ -13,7 +13,7 @@ describe('SetTarget', () => {
     assert.equal(user.body.state.application.targetName, 'локалхост');
   });
 
-  it.only('set incorrect target', async () => {
+  it('set incorrect target', async () => {
     const user = new User();
 
     await user.enter();

@@ -7,7 +7,7 @@ module.exports = class ShowTargets extends BaseComponent {
     const targetName = this.state?.application?.targetName;
     return !targetName
       || targets.every(target => target.name !== targetName)
-      || this.request.command.match(/список таргетов|покажи таргеты/)
+      || this.request.command.match(/список таргетов|покажи таргеты/);
   }
 
   reply() {

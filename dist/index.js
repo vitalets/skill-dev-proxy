@@ -20,8 +20,7 @@ module.exports = class PingPong extends BaseComponent {
   }
 
   reply() {
-    const response = reply`pong`;
-    return { response };
+    this.response = reply`pong`;
   }
 };
 
@@ -44,15 +43,24 @@ module.exports = class BaseComponent {
     this.request = request;
     this.session = session;
     this.state = state;
+    this.response = null;
     this.resBody = null;
   }
 
   async run() {
     if (this.match()) {
-      this.resBody = await this.reply();
-      this.resBody.version = '1.0';
+      await this.reply();
+      this.buildResBody();
       return this.resBody;
     }
+  }
+
+  buildResBody() {
+    this.resBody = {
+      response: this.response,
+      state: this.state,
+      version: '1.0'
+    };
   }
 };
 
@@ -70,54 +78,79 @@ module.exports = class ShowTargets extends BaseComponent {
     const targetName = this.state?.application?.targetName;
     return !targetName
       || targets.every(target => target.name !== targetName)
-      || this.request.command.match(/список таргетов|покажи таргеты/)
+      || this.request.command.match(/список таргетов|покажи таргеты/);
   }
 
   reply() {
-    const response = reply`
-      Выберите таргет для проксирования:
-      ${buttons(this.replyButtons())}
+    this.response = reply`
+      Выберите таргет:
+      ${buttons(this.buttons())}
     `;
-    return { response };
   }
 
-  replyButtons() {
-    return targets.map(target => ({ title: target.name, hide: false }));
+  buttons() {
+    return targets.map(target => {
+      return {
+        title: `Установи таргет ${target.name}`,
+        hide: false
+      };
+    });
   }
 };
 
 
 /***/ }),
 /* 6 */
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+/***/ ((module) => {
 
-const fs = __webpack_require__(7);
-const path = __webpack_require__(8);
-
-const TARGETS_FILE = path.resolve(__dirname, 'targets.json');
-
-module.exports = fs.existsSync(TARGETS_FILE)
-  ? JSON.parse(fs.readFileSync(TARGETS_FILE, 'utf8'))
-  : [];
-
-
-
-
-
+"use strict";
+module.exports = require("./targets");;
 
 /***/ }),
 /* 7 */
-/***/ ((module) => {
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-"use strict";
-module.exports = require("fs");;
+const { reply } = __webpack_require__(3);
+const targets = __webpack_require__(6);
+const BaseComponent = __webpack_require__(4);
 
-/***/ }),
-/* 8 */
-/***/ ((module) => {
+module.exports = class SetTarget extends BaseComponent {
+  match() {
+    const matches = this.request.command.match(/(установи|поставь) таргет (.+)/);
+    if (!matches) {
+      return;
+    }
+    this.requestedTargetName = matches[2];
+    this.foundTarget = targets.find(target => target.name === this.requestedTargetName);
+    if (this.foundTarget) {
+      this.state = this.state || {};
+      this.state.application = {
+        targetName: this.foundTarget.name
+      };
+    }
+    return true;
+  }
 
-"use strict";
-module.exports = require("path");;
+  reply() {
+    this.response = this.replyTargetFound() || this.replyTargetNotFound();
+  }
+
+  replyTargetFound() {
+    if (this.foundTarget) {
+      return reply`
+        Выбран таргет ${this.foundTarget.name}.
+        Следующие запросы пойдут на него.
+      `;
+    }
+  }
+
+  replyTargetNotFound() {
+    return reply`
+      Таргет ${this.requestedTargetName} не найден.
+    `;
+  }
+};
+
 
 /***/ })
 /******/ 	]);
@@ -154,14 +187,14 @@ var exports = __webpack_exports__;
 const logger = __webpack_require__(1)({ level: process.env.LOG_LEVEL || 'info' });
 const PingPong = __webpack_require__(2);
 const ShowTargets = __webpack_require__(5);
-// const ChangeTarget = require('./ChangeTarget');
+const SetTarget = __webpack_require__(7);
 // const ProxyToUrl = require('./ProxyToUrl');
 // const ProxyToQueue = require('./ProxyToQueue');
 
 const Components = [
   PingPong,
+  SetTarget,
   ShowTargets,
-  // ChangeTarget,
   // ProxyToUrl,
   // ProxyToQueue,
 ];

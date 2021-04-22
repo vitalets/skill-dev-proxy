@@ -16,21 +16,20 @@ module.exports = {
     },
   },
   externals: [
-    nodeExternals()
+    nodeExternals(),
+    './targets',
   ],
   plugins: [
     new CopyPlugin({
       patterns: [
-        { from: 'src/targets.json', to: outDir },
-        { from: 'package.json', to: outDir, transform: removeDevDeps },
+        { from: 'src/targets.js', to: outDir },
+        { from: 'package.json', to: outDir, transform: cleanPackageJson },
       ],
     }),
   ],
 };
 
-function removeDevDeps(content) {
-  content = JSON.parse(content.toString());
-  delete content.devDependencies;
-  delete content.scripts;
-  return JSON.stringify(content, false, 2);
+function cleanPackageJson(content) {
+  const { name, version, private, dependencies } = JSON.parse(content.toString());
+  return JSON.stringify({ name, version, private, dependencies }, false, 2);
 }

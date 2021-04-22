@@ -21,6 +21,7 @@
   "devDependencies": {
     "alice-tester": "^1.2.0",
     "chai": "^4.3.4",
+    "clean-webpack-plugin": "^4.0.0-alpha.0",
     "copy-webpack-plugin": "^8.1.1",
     "eslint": "^7.24.0",
     "eslint-plugin-mocha": "^8.1.0",

@@ -1,6 +1,7 @@
 const path = require('path');
 const nodeExternals = require('webpack-node-externals');
 const CopyPlugin = require('copy-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 const outDir = path.resolve(__dirname, 'dist');
 
@@ -20,6 +21,7 @@ module.exports = {
     './targets',
   ],
   plugins: [
+    new CleanWebpackPlugin(),
     new CopyPlugin({
       patterns: [
         { from: 'src/targets.js', to: outDir },

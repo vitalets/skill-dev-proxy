@@ -229,7 +229,7 @@ class ProxyToTarget extends Component {
       ${text(e.message)}
     `;
   }
-};
+}
 
 // webpack can't parse static class props out of box.
 // So use this assignment instead of installing babel-loader and complexify configuration.

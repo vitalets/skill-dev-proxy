@@ -7,7 +7,7 @@
     "lint": "eslint src test",
     "test:log": "mocha test/setup test/specs",
     "test": "LOG_LEVEL=error npm run test:log",
-    "test:dist": "HANDLER_PATH=../dist npm test",
+    "test:dist": "npm run build && HANDLER_PATH=../dist npm test",
     "build": "webpack"
   },
   "lint-staged": {

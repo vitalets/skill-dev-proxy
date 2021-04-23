@@ -1,20 +1,17 @@
 const { reply } = require('alice-renderer');
 const targets = require('./targets');
-const BaseComponent = require('./BaseComponent');
+const Component = require('./Component');
 
-module.exports = class SetTarget extends BaseComponent {
+module.exports = class SetTarget extends Component {
   match() {
     const matches = this.request.command.match(/(установи|поставь) таргет (.+)/);
     if (!matches) {
       return;
     }
     this.requestedTargetName = matches[2];
-    this.foundTarget = targets.find(target => target.name === this.requestedTargetName);
-    if (this.foundTarget) {
-      this.state = this.state || {};
-      this.state.application = {
-        targetName: this.foundTarget.name
-      };
+    this.target = targets.find(target => target.name === this.requestedTargetName);
+    if (this.target) {
+      this.applicationState = { targetName: this.target.name };
     }
     return true;
   }
@@ -24,9 +21,9 @@ module.exports = class SetTarget extends BaseComponent {
   }
 
   replyTargetFound() {
-    if (this.foundTarget) {
+    if (this.target) {
       return reply`
-        Выбран таргет ${this.foundTarget.name}.
+        Выбран таргет ${this.target.name}.
         Следующие запросы пойдут на него.
       `;
     }

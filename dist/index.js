@@ -2,19 +2,32 @@
 /******/ 	var __webpack_modules__ = ([
 /* 0 */,
 /* 1 */
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+const logger = __webpack_require__(2)({
+  level: process.env.LOG_LEVEL || 'info'
+});
+
+logger.log = logger.info;
+
+module.exports = logger;
+
+
+/***/ }),
+/* 2 */
 /***/ ((module) => {
 
 "use strict";
 module.exports = require("console-log-level");;
 
 /***/ }),
-/* 2 */
+/* 3 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-const { reply } = __webpack_require__(3);
-const BaseComponent = __webpack_require__(4);
+const { reply } = __webpack_require__(4);
+const Component = __webpack_require__(5);
 
-module.exports = class PingPong extends BaseComponent {
+module.exports = class PingPong extends Component {
   match() {
     return this.request.command === 'ping';
   }
@@ -26,29 +39,29 @@ module.exports = class PingPong extends BaseComponent {
 
 
 /***/ }),
-/* 3 */
+/* 4 */
 /***/ ((module) => {
 
 "use strict";
 module.exports = require("alice-renderer");;
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ ((module) => {
 
-module.exports = class BaseComponent {
+module.exports = class Component {
   constructor(reqBody) {
     const { request, session, state } = reqBody;
     this.reqBody = reqBody;
     this.request = request;
     this.session = session;
-    this.state = state;
+    this.applicationState = state && state.application || null;
     this.response = null;
     this.resBody = null;
   }
 
-  async run() {
-    if (this.match()) {
+  async run({ force } = {}) {
+    if (force || this.match()) {
       await this.reply();
       this.buildResBody();
       return this.resBody;
@@ -56,29 +69,28 @@ module.exports = class BaseComponent {
   }
 
   buildResBody() {
-    this.resBody = {
-      response: this.response,
-      state: this.state,
-      version: '1.0'
-    };
+    if (!this.resBody) {
+      this.resBody = {
+        response: this.response,
+        application_state: this.applicationState,
+        version: '1.0',
+      };
+    }
   }
 };
 
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-const { reply, buttons } = __webpack_require__(3);
-const targets = __webpack_require__(6);
-const BaseComponent = __webpack_require__(4);
+const { reply, buttons } = __webpack_require__(4);
+const targets = __webpack_require__(7);
+const Component = __webpack_require__(5);
 
-module.exports = class ShowTargets extends BaseComponent {
+module.exports = class ShowTargets extends Component {
   match() {
-    const targetName = this.state?.application?.targetName;
-    return !targetName
-      || targets.every(target => target.name !== targetName)
-      || this.request.command.match(/список таргетов|покажи таргеты/);
+    return this.request.command.match(/список таргетов|покажи таргеты/);
   }
 
   reply() {
@@ -100,33 +112,30 @@ module.exports = class ShowTargets extends BaseComponent {
 
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ ((module) => {
 
 "use strict";
 module.exports = require("./targets");;
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-const { reply } = __webpack_require__(3);
-const targets = __webpack_require__(6);
-const BaseComponent = __webpack_require__(4);
+const { reply } = __webpack_require__(4);
+const targets = __webpack_require__(7);
+const Component = __webpack_require__(5);
 
-module.exports = class SetTarget extends BaseComponent {
+module.exports = class SetTarget extends Component {
   match() {
     const matches = this.request.command.match(/(установи|поставь) таргет (.+)/);
     if (!matches) {
       return;
     }
     this.requestedTargetName = matches[2];
-    this.foundTarget = targets.find(target => target.name === this.requestedTargetName);
-    if (this.foundTarget) {
-      this.state = this.state || {};
-      this.state.application = {
-        targetName: this.foundTarget.name
-      };
+    this.target = targets.find(target => target.name === this.requestedTargetName);
+    if (this.target) {
+      this.applicationState = { targetName: this.target.name };
     }
     return true;
   }
@@ -136,9 +145,9 @@ module.exports = class SetTarget extends BaseComponent {
   }
 
   replyTargetFound() {
-    if (this.foundTarget) {
+    if (this.target) {
       return reply`
-        Выбран таргет ${this.foundTarget.name}.
+        Выбран таргет ${this.target.name}.
         Следующие запросы пойдут на него.
       `;
     }
@@ -151,6 +160,98 @@ module.exports = class SetTarget extends BaseComponent {
   }
 };
 
+
+/***/ }),
+/* 9 */
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+const { reply, text, tts } = __webpack_require__(4);
+const Timeout = __webpack_require__(10);
+const getFetch = () => __webpack_require__(11);
+const logger = __webpack_require__(1);
+const targets = __webpack_require__(7);
+const Component = __webpack_require__(5);
+
+class ProxyToTarget extends Component {
+  match() {
+    const targetName = this.applicationState?.targetName;
+    this.target = targets.find(target => target.name === targetName);
+    return Boolean(this.target);
+  }
+
+  async reply() {
+    try {
+      await Timeout.wrap(
+        this.proxyRequest(),
+        ProxyToTarget.TIMEOUT,
+        `Таймаут таргета ${this.target.name}`
+      );
+    } catch (e) {
+      this.replyError(e);
+    }
+  }
+
+  async proxyRequest() {
+    if (this.isQueueTarget()) {
+      await this.proxyToQueue();
+    } else {
+      await this.proxyToUrl();
+    }
+  }
+
+  isQueueTarget() {
+    return this.target.url.startsWith(ProxyToTarget.QUEUE_URL_PREFIX);
+  }
+
+  async proxyToUrl() {
+    const fetch = getFetch();
+    const method = 'POST';
+    const url = this.target.url;
+    logger.log(`PROXY TO: ${url}`);
+    const body = JSON.stringify(this.reqBody);
+    const response = await fetch(url, { method, body });
+    if (response.ok) {
+      this.resBody = await response.json();
+    } else {
+      const message = [response.status, response.statusText, await response.text()].filter(Boolean).join(' ');
+      throw new Error(message);
+    }
+  }
+
+  async proxyToQueue() {
+
+  }
+
+  replyError(e) {
+    logger.log(e);
+    this.response = reply`
+      ${tts('Ошибка')}
+      ${text(e.message)}
+    `;
+  }
+};
+
+// webpack can't parse static class props out of box.
+// So use this assignment instead of installing babel-loader and complexify configuration.
+ProxyToTarget.QUEUE_URL_PREFIX = 'https://message-queue.api.cloud.yandex.net';
+ProxyToTarget.TIMEOUT = 2800;
+
+module.exports = ProxyToTarget;
+
+
+/***/ }),
+/* 10 */
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("await-timeout");;
+
+/***/ }),
+/* 11 */
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("node-fetch");;
 
 /***/ })
 /******/ 	]);
@@ -184,35 +285,38 @@ var __webpack_exports__ = {};
 // This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
 (() => {
 var exports = __webpack_exports__;
-const logger = __webpack_require__(1)({ level: process.env.LOG_LEVEL || 'info' });
-const PingPong = __webpack_require__(2);
-const ShowTargets = __webpack_require__(5);
-const SetTarget = __webpack_require__(7);
-// const ProxyToUrl = require('./ProxyToUrl');
+const logger = __webpack_require__(1);
+const PingPong = __webpack_require__(3);
+const ShowTargets = __webpack_require__(6);
+const SetTarget = __webpack_require__(8);
+const ProxyToTarget = __webpack_require__(9);
 // const ProxyToQueue = require('./ProxyToQueue');
 
 const Components = [
   PingPong,
   SetTarget,
   ShowTargets,
-  // ProxyToUrl,
-  // ProxyToQueue,
+  ProxyToTarget,
+  ShowTargets,
 ];
 
 exports.handler = async reqBody => {
-  logger.info(`REQUEST: ${JSON.stringify(reqBody)}`);
-  const resBody = await proxyToComponent(reqBody);
-  logger.info(`RESPONSE: ${JSON.stringify(resBody)}`);
+  logger.log(`REQUEST: ${JSON.stringify(reqBody)}`);
+  const resBody = await handleByComponent(reqBody);
+  logger.log(`RESPONSE: ${JSON.stringify(resBody)}`);
   return resBody;
 };
 
-async function proxyToComponent(reqBody) {
+async function handleByComponent(reqBody) {
   for (const Component of Components) {
     const resBody = await new Component(reqBody).run();
     if (resBody) {
       return resBody;
     }
   }
+
+  const LastComponent = Components[Components.length - 1];
+  return new LastComponent(reqBody).run({ force: true });
 }
 
 })();

@@ -1,30 +1,33 @@
-const logger = require('console-log-level')({ level: process.env.LOG_LEVEL || 'info' });
+const logger = require('./logger');
 const PingPong = require('./PingPong');
 const ShowTargets = require('./ShowTargets');
 const SetTarget = require('./SetTarget');
-// const ProxyToUrl = require('./ProxyToUrl');
+const ProxyToTarget = require('./ProxyToTarget');
 // const ProxyToQueue = require('./ProxyToQueue');
 
 const Components = [
   PingPong,
   SetTarget,
   ShowTargets,
-  // ProxyToUrl,
-  // ProxyToQueue,
+  ProxyToTarget,
+  ShowTargets,
 ];
 
 exports.handler = async reqBody => {
-  logger.info(`REQUEST: ${JSON.stringify(reqBody)}`);
-  const resBody = await proxyToComponent(reqBody);
-  logger.info(`RESPONSE: ${JSON.stringify(resBody)}`);
+  logger.log(`REQUEST: ${JSON.stringify(reqBody)}`);
+  const resBody = await handleByComponent(reqBody);
+  logger.log(`RESPONSE: ${JSON.stringify(resBody)}`);
   return resBody;
 };
 
-async function proxyToComponent(reqBody) {
+async function handleByComponent(reqBody) {
   for (const Component of Components) {
     const resBody = await new Component(reqBody).run();
     if (resBody) {
       return resBody;
     }
   }
+
+  const LastComponent = Components[Components.length - 1];
+  return new LastComponent(reqBody).run({ force: true });
 }

@@ -12,8 +12,8 @@ describe('ShowTargets', () => {
   });
 
   it('enter with invalid target', async () => {
-    const state = { application: { targetName: 'blabla' }};
-    const user = new User('', { state });
+    const user = new User();
+    user.state.application = { targetName: 'blabla' };
 
     await user.enter();
 
@@ -21,10 +21,10 @@ describe('ShowTargets', () => {
   });
 
   it('show targets by command', async () => {
-    const state = { application: { targetName: 'локалхост' }};
     const user = new User();
+    user.state.application = { targetName: 'локалхост' };
 
-    await user.say('список таргетов', { state });
+    await user.say('список таргетов');
 
     assert.include(user.response.text, SHOW_TARGETS_KEYWORD);
   });

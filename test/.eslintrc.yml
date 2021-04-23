@@ -3,11 +3,8 @@ env:
 
 globals:
   assert: false
-  sinon: false
   User: false
-  db: false
-  ms: false
-  fetch: false
+  nock: false
 
 plugins:
   - mocha

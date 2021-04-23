@@ -1,7 +1,7 @@
 const { reply } = require('alice-renderer');
-const BaseComponent = require('./BaseComponent');
+const Component = require('./Component');
 
-module.exports = class PingPong extends BaseComponent {
+module.exports = class PingPong extends Component {
   match() {
     return this.request.command === 'ping';
   }

@@ -2,7 +2,7 @@
 module.exports = [
   {
     name: 'локалхост',
-    url: 'https://queue-url',
+    url: 'https://message-queue.api.cloud.yandex.net/my-queue',
   },
   {
     name: 'навык 1',

@@ -1,7 +1,7 @@
 // targets example
 module.exports = [
   {
-    name: 'локалхост',
+    name: 'Локалхост',
     url: 'https://message-queue.api.cloud.yandex.net/my-queue',
   },
   {

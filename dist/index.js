@@ -133,7 +133,7 @@ module.exports = class SetTarget extends Component {
       return;
     }
     this.requestedTargetName = matches[2];
-    this.target = targets.find(target => target.name === this.requestedTargetName);
+    this.target = targets.find(target => target.name.toLowerCase() === this.requestedTargetName);
     if (this.target) {
       this.applicationState = { targetName: this.target.name };
     }
@@ -148,7 +148,6 @@ module.exports = class SetTarget extends Component {
     if (this.target) {
       return reply`
         Выбран таргет ${this.target.name}.
-        Следующие запросы пойдут на него.
       `;
     }
   }
@@ -172,10 +171,15 @@ const logger = __webpack_require__(1);
 const targets = __webpack_require__(7);
 const Component = __webpack_require__(5);
 
+const HEADERS = {
+  'Accept': 'application/json',
+  'Content-Type': 'application/json',
+};
+
 class ProxyToTarget extends Component {
   match() {
     const targetName = this.applicationState?.targetName;
-    this.target = targets.find(target => target.name === targetName);
+    this.target = targets.find(target => target.name.toLowerCase() === targetName);
     return Boolean(this.target);
   }
 
@@ -205,11 +209,10 @@ class ProxyToTarget extends Component {
 
   async proxyToUrl() {
     const fetch = getFetch();
-    const method = 'POST';
     const url = this.target.url;
     logger.log(`PROXY TO: ${url}`);
     const body = JSON.stringify(this.reqBody);
-    const response = await fetch(url, { method, body });
+    const response = await fetch(url, { method: 'POST', headers: HEADERS, body });
     if (response.ok) {
       this.resBody = await response.json();
     } else {

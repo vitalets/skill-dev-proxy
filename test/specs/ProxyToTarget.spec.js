@@ -4,7 +4,7 @@ describe('ProxyToTarget', () => {
     const user = new User();
 
     const scope = nock('https://my-webhook.ru')
-    .post('/')
+    .post('/', reqBody => reqBody.request.command === 'привет')
     .reply(200, {
       response: {
         text: 'куку',

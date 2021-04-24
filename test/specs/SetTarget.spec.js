@@ -8,8 +8,8 @@ describe('SetTarget', () => {
     await user.say('установи таргет локалхост');
 
     assert.include(user.response.text, SET_TARGET_KEYWORD);
-    assert.include(user.response.text, 'локалхост');
-    assert.equal(user.state.application.targetName, 'локалхост');
+    assert.include(user.response.text, 'Локалхост');
+    assert.equal(user.state.application.targetName, 'Локалхост');
   });
 
   it('set incorrect target', async () => {

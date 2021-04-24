@@ -8,7 +8,7 @@ const Component = require('./Component');
 class ProxyToTarget extends Component {
   match() {
     const targetName = this.applicationState?.targetName;
-    this.target = targets.find(target => target.name === targetName);
+    this.target = targets.find(target => target.name.toLowerCase() === targetName);
     return Boolean(this.target);
   }
 

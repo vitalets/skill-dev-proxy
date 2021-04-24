@@ -24,7 +24,6 @@ module.exports = class SetTarget extends Component {
     if (this.target) {
       return reply`
         Выбран таргет ${this.target.name}.
-        Следующие запросы пойдут на него.
       `;
     }
   }

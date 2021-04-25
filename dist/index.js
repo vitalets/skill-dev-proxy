@@ -128,11 +128,12 @@ const Component = __webpack_require__(5);
 
 module.exports = class SetTarget extends Component {
   match() {
-    const matches = this.request.command.match(/(установи|поставь) таргет (.+)/);
+    const command = this.request.command.replace(/local\s?host/i, 'локалхост');
+    const matches = command.match(/(установи|поставь) (таргет|target) (.+)/);
     if (!matches) {
       return;
     }
-    this.requestedTargetName = matches[2].toLowerCase();
+    this.requestedTargetName = matches[3].toLowerCase();
     this.target = targets.find(target => target.name.toLowerCase() === this.requestedTargetName);
     if (this.target) {
       this.applicationState = { targetName: this.target.name };

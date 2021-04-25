@@ -12,6 +12,16 @@ describe('SetTarget', () => {
     assert.equal(user.state.application.targetName, 'Локалхост');
   });
 
+  it('set correct target (en)', async () => {
+    const user = new User();
+
+    await user.say('установи target local host');
+
+    assert.include(user.response.text, SET_TARGET_KEYWORD);
+    assert.include(user.response.text, 'Локалхост');
+    assert.equal(user.state.application.targetName, 'Локалхост');
+  });
+
   it('set incorrect target', async () => {
     const user = new User();
 

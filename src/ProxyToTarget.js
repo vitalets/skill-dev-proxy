@@ -1,18 +1,17 @@
 const { reply, text, tts } = require('alice-renderer');
 const Timeout = require('await-timeout');
-const getFetch = () => require('node-fetch');
 const logger = require('./logger');
 const targets = require('./targets');
 const Component = require('./Component');
 
-const HEADERS = {
-  'Accept': 'application/json',
-  'Content-Type': 'application/json',
+const TARGET_TYPES = {
+  http: require('./target-types/http'),
+  amqp: require('./target-types/amqp'),
 };
 
 class ProxyToTarget extends Component {
   match() {
-    const targetName = this.applicationState?.targetName;
+    const targetName = this.applicationState?.targetName?.toLowerCase();
     this.target = targets.find(target => target.name.toLowerCase() === targetName);
     return Boolean(this.target);
   }
@@ -30,47 +29,24 @@ class ProxyToTarget extends Component {
   }
 
   async proxyRequest() {
-    if (this.isQueueTarget()) {
-      await this.proxyToQueue();
-    } else {
-      await this.proxyToUrl();
-    }
-  }
-
-  isQueueTarget() {
-    return this.target.url.startsWith(ProxyToTarget.QUEUE_URL_PREFIX);
-  }
-
-  async proxyToUrl() {
-    const fetch = getFetch();
-    const url = this.target.url;
-    logger.log(`PROXY TO: ${url}`);
-    const body = JSON.stringify(this.reqBody);
-    const response = await fetch(url, { method: 'POST', headers: HEADERS, body });
-    if (response.ok) {
-      this.resBody = await response.json();
-    } else {
-      const message = [response.status, response.statusText, await response.text()].filter(Boolean).join(' ');
-      throw new Error(message);
-    }
-  }
-
-  async proxyToQueue() {
-
+    logger.log(`PROXY TO TARGET: ${this.target.name}`);
+    const protocol = new URL(this.target.url).protocol.replace(/s?:$/, '');
+    const { proxy } = TARGET_TYPES[protocol];
+    this.resBody = await proxy({ url: this.target.url, reqBody: this.reqBody });
   }
 
   replyError(e) {
     logger.log(e);
+    const message = e.stack.split('\n').slice(0, 2).join('\n');
     this.response = reply`
       ${tts('Ошибка')}
-      ${text(e.message)}
+      ${text(message)}
     `;
   }
 }
 
 // webpack can't parse static class props out of box.
 // So use this assignment instead of installing babel-loader and complexify configuration.
-ProxyToTarget.QUEUE_URL_PREFIX = 'https://message-queue.api.cloud.yandex.net';
 ProxyToTarget.TIMEOUT = 2800;
 
 module.exports = ProxyToTarget;

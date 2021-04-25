@@ -3,7 +3,6 @@ const PingPong = require('./PingPong');
 const ShowTargets = require('./ShowTargets');
 const SetTarget = require('./SetTarget');
 const ProxyToTarget = require('./ProxyToTarget');
-// const ProxyToQueue = require('./ProxyToQueue');
 
 const Components = [
   PingPong,

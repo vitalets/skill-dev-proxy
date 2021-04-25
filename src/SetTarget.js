@@ -8,7 +8,7 @@ module.exports = class SetTarget extends Component {
     if (!matches) {
       return;
     }
-    this.requestedTargetName = matches[2];
+    this.requestedTargetName = matches[2].toLowerCase();
     this.target = targets.find(target => target.name.toLowerCase() === this.requestedTargetName);
     if (this.target) {
       this.applicationState = { targetName: this.target.name };

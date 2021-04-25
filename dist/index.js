@@ -132,7 +132,7 @@ module.exports = class SetTarget extends Component {
     if (!matches) {
       return;
     }
-    this.requestedTargetName = matches[2];
+    this.requestedTargetName = matches[2].toLowerCase();
     this.target = targets.find(target => target.name.toLowerCase() === this.requestedTargetName);
     if (this.target) {
       this.applicationState = { targetName: this.target.name };
@@ -166,19 +166,18 @@ module.exports = class SetTarget extends Component {
 
 const { reply, text, tts } = __webpack_require__(4);
 const Timeout = __webpack_require__(10);
-const getFetch = () => __webpack_require__(11);
 const logger = __webpack_require__(1);
 const targets = __webpack_require__(7);
 const Component = __webpack_require__(5);
 
-const HEADERS = {
-  'Accept': 'application/json',
-  'Content-Type': 'application/json',
+const TARGET_TYPES = {
+  http: __webpack_require__(11),
+  amqp: __webpack_require__(13),
 };
 
 class ProxyToTarget extends Component {
   match() {
-    const targetName = this.applicationState?.targetName;
+    const targetName = this.applicationState?.targetName?.toLowerCase();
     this.target = targets.find(target => target.name.toLowerCase() === targetName);
     return Boolean(this.target);
   }
@@ -196,47 +195,24 @@ class ProxyToTarget extends Component {
   }
 
   async proxyRequest() {
-    if (this.isQueueTarget()) {
-      await this.proxyToQueue();
-    } else {
-      await this.proxyToUrl();
-    }
-  }
-
-  isQueueTarget() {
-    return this.target.url.startsWith(ProxyToTarget.QUEUE_URL_PREFIX);
-  }
-
-  async proxyToUrl() {
-    const fetch = getFetch();
-    const url = this.target.url;
-    logger.log(`PROXY TO: ${url}`);
-    const body = JSON.stringify(this.reqBody);
-    const response = await fetch(url, { method: 'POST', headers: HEADERS, body });
-    if (response.ok) {
-      this.resBody = await response.json();
-    } else {
-      const message = [response.status, response.statusText, await response.text()].filter(Boolean).join(' ');
-      throw new Error(message);
-    }
-  }
-
-  async proxyToQueue() {
-
+    logger.log(`PROXY TO TARGET: ${this.target.name}`);
+    const protocol = new URL(this.target.url).protocol.replace(/s?:$/, '');
+    const { proxy } = TARGET_TYPES[protocol];
+    this.resBody = await proxy({ url: this.target.url, reqBody: this.reqBody });
   }
 
   replyError(e) {
     logger.log(e);
+    const message = e.stack.split('\n').slice(0, 2).join('\n');
     this.response = reply`
       ${tts('Ошибка')}
-      ${text(e.message)}
+      ${text(message)}
     `;
   }
 }
 
 // webpack can't parse static class props out of box.
 // So use this assignment instead of installing babel-loader and complexify configuration.
-ProxyToTarget.QUEUE_URL_PREFIX = 'https://message-queue.api.cloud.yandex.net';
 ProxyToTarget.TIMEOUT = 2800;
 
 module.exports = ProxyToTarget;
@@ -251,10 +227,88 @@ module.exports = require("await-timeout");;
 
 /***/ }),
 /* 11 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+/**
+ * Proxy to http url.
+ */
+const getFetch = () => __webpack_require__(12);
+
+const headers = {
+  'Accept': 'application/json',
+  'Content-Type': 'application/json',
+};
+const method = 'POST';
+
+exports.proxy = async ({ url, reqBody }) => {
+  const fetch = getFetch();
+  const body = JSON.stringify(reqBody);
+  const response = await fetch(url, { method, headers, body });
+  return response.ok
+    ? response.json()
+    : await throwResponseError(response);
+};
+
+async function throwResponseError(response) {
+  const message = [response.status, response.statusText, await response.text()].filter(Boolean).join(' ');
+  throw new Error(message);
+}
+
+
+/***/ }),
+/* 12 */
 /***/ ((module) => {
 
 "use strict";
 module.exports = require("node-fetch");;
+
+/***/ }),
+/* 13 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+/**
+ * Proxy as message to amqp broker and wait response.
+ */
+
+const getAmqp = () => __webpack_require__(14);
+
+const FROM_USER_QUEUE = 'from-user';
+const FROM_SKILL_QUEUE = 'from-skill';
+
+let conn;
+let channel;
+
+exports.proxy = async ({ url, reqBody }) => {
+  const amqp = getAmqp();
+  conn = conn || await amqp.connect(url);
+  channel = channel || await conn.createChannel();
+  await sendMessage(JSON.stringify(reqBody));
+  return JSON.parse(await waitMessage());
+};
+
+async function sendMessage(message) {
+  await channel.assertQueue(FROM_USER_QUEUE);
+  await channel.sendToQueue(FROM_USER_QUEUE, Buffer.from(message));
+}
+
+async function waitMessage() {
+  let resolve;
+  const promise = new Promise(r => resolve = r);
+  await channel.assertQueue(FROM_SKILL_QUEUE);
+  const { consumerTag } = await channel.consume(FROM_SKILL_QUEUE, msg => {
+    resolve(msg.content.toString());
+  }, {noAck: true});
+  promise.then(() => channel.cancel(consumerTag));
+  return promise;
+}
+
+
+/***/ }),
+/* 14 */
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("amqplib");;
 
 /***/ })
 /******/ 	]);
@@ -293,7 +347,6 @@ const PingPong = __webpack_require__(3);
 const ShowTargets = __webpack_require__(6);
 const SetTarget = __webpack_require__(8);
 const ProxyToTarget = __webpack_require__(9);
-// const ProxyToQueue = require('./ProxyToQueue');
 
 const Components = [
   PingPong,

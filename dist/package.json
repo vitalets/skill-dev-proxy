@@ -4,8 +4,8 @@
   "private": true,
   "dependencies": {
     "alice-renderer": "^1.1.0",
+    "amqplib": "^0.7.1",
     "await-timeout": "^1.1.1",
-    "aws-sdk": "^2.888.0",
     "console-log-level": "^1.4.1",
     "node-fetch": "^2.6.1"
   }

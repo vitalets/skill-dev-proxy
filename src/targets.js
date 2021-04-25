@@ -1,15 +1,14 @@
-// targets example
 module.exports = [
   {
     name: 'Локалхост',
-    url: 'https://message-queue.api.cloud.yandex.net/my-queue',
+    url: 'amqps://my-amqp-url',
   },
   {
     name: 'навык 1',
-    url: 'https://functions.yandexcloud.net/my-function',
+    url: 'https://my-webhook.ru',
   },
   {
     name: 'навык 2',
-    url: 'https://my-webhook.ru',
+    url: 'https://functions.yandexcloud.net/my-function',
   }
 ];

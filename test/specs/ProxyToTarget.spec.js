@@ -1,6 +1,6 @@
 describe('ProxyToTarget', () => {
 
-  it('proxy to url (success)', async () => {
+  it('proxy to http (success)', async () => {
     const user = new User();
 
     const scope = nock('https://my-webhook.ru')
@@ -12,7 +12,7 @@ describe('ProxyToTarget', () => {
       version: '1.0'
     });
 
-    await user.say('установи таргет навык 2');
+    await user.say('установи таргет навык 1');
     await user.say('привет');
 
     scope.done();
@@ -24,14 +24,14 @@ describe('ProxyToTarget', () => {
     });
   });
 
-  it('proxy to url (error)', async () => {
+  it('proxy to http (error)', async () => {
     const user = new User();
 
     const scope = nock('https://my-webhook.ru')
     .post('/')
     .reply(500, 'something broken');
 
-    await user.say('установи таргет навык 2');
+    await user.say('установи таргет навык 1');
     await user.say('привет');
 
     scope.done();
@@ -39,14 +39,14 @@ describe('ProxyToTarget', () => {
     assert.include(user.response.tts, 'Ошибка');
   });
 
-  it('proxy to url (timeout)', async function () {
+  it('proxy to http (timeout)', async function () {
     let timeout = 2800;
     if (!process.env.HANDLER_PATH) {
       // when testing src (not dist), we can change TIMEOUT of ProxyToTarget class.
       const ProxyToTarget = require('../../src/ProxyToTarget');
       timeout = ProxyToTarget.TIMEOUT = 100;
     }
-    const responseDelay = timeout + 100;
+    const responseDelay = timeout + 200;
     this.timeout(responseDelay);
 
     const user = new User();
@@ -56,11 +56,11 @@ describe('ProxyToTarget', () => {
     .delay(responseDelay)
     .reply(200);
 
-    await user.say('установи таргет навык 2');
+    await user.say('установи таргет навык 1');
     await user.say('привет');
 
     scope.done();
-    assert.include(user.response.text, 'Таймаут таргета навык 2');
+    assert.include(user.response.text, 'Таймаут таргета навык 1');
     assert.include(user.response.tts, 'Ошибка');
   });
 

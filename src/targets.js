@@ -1,6 +1,7 @@
 module.exports = [
   {
     name: 'Локалхост',
+    match: /local\s?[hfp]ost/i,
     url: 'amqps://my-amqp-url',
   },
   {

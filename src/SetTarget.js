@@ -1,24 +1,22 @@
 const { reply } = require('alice-renderer');
-const targets = require('./targets');
-const Component = require('./Component');
+const { findTargetByName } = require('./helpers');
 
-module.exports = class SetTarget extends Component {
+module.exports = class SetTarget {
   match() {
-    const command = this.request.command.replace(/local\s?[hf]ost/i, 'локалхост');
-    const matches = command.match(/(установи|поставь) (таргет|target) (.+)/);
+    const matches = this.ctx.request.command.match(/(установи|поставь) (таргет|target) (.+)/);
     if (!matches) {
       return;
     }
-    this.requestedTargetName = matches[3].toLowerCase();
-    this.target = targets.find(target => target.name.toLowerCase() === this.requestedTargetName);
+    this.requestedTargetName = matches[3];
+    this.target = findTargetByName(this.requestedTargetName);
     if (this.target) {
-      this.applicationState = { targetName: this.target.name };
+      this.ctx.state.targetName = this.target.name;
     }
     return true;
   }
 
   reply() {
-    this.response = this.replyTargetFound() || this.replyTargetNotFound();
+    this.ctx.response = this.replyTargetFound() || this.replyTargetNotFound();
   }
 
   replyTargetFound() {

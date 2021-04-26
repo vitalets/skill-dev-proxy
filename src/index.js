@@ -1,4 +1,5 @@
 const logger = require('./logger');
+const Ctx = require('./ctx');
 const PingPong = require('./PingPong');
 const ShowTargets = require('./ShowTargets');
 const SetTarget = require('./SetTarget');
@@ -14,19 +15,29 @@ const Components = [
 
 exports.handler = async reqBody => {
   logger.log(`REQUEST: ${JSON.stringify(reqBody)}`);
-  const resBody = await handleByComponent(reqBody);
-  logger.log(`RESPONSE: ${JSON.stringify(resBody)}`);
-  return resBody;
+  const ctx = new Ctx(reqBody);
+  await runComponents(ctx);
+  logger.log(`RESPONSE: ${JSON.stringify(ctx.resBody)}`);
+  return ctx.resBody;
 };
 
-async function handleByComponent(reqBody) {
+async function runComponents(ctx) {
   for (const Component of Components) {
-    const resBody = await new Component(reqBody).run();
-    if (resBody) {
-      return resBody;
+    await runComponent(Component, ctx);
+    if (ctx.resBody) {
+      return;
     }
   }
 
   const LastComponent = Components[Components.length - 1];
-  return new LastComponent(reqBody).run({ force: true });
+  await runComponent(LastComponent, ctx, { force: true });
+}
+
+async function runComponent(Component, ctx, { force } = {}) {
+  const component = new Component();
+  component.ctx = ctx;
+  if (component.match() || force) {
+    await component.reply();
+    ctx.buildResBody();
+  }
 }

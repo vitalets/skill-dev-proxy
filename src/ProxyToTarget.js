@@ -1,18 +1,16 @@
 const { reply, text, tts } = require('alice-renderer');
 const Timeout = require('await-timeout');
 const logger = require('./logger');
-const targets = require('./targets');
-const Component = require('./Component');
+const { findTargetByName } = require('./helpers');
 
 const TARGET_TYPES = {
   http: require('./target-types/http'),
   amqp: require('./target-types/amqp'),
 };
 
-class ProxyToTarget extends Component {
+class ProxyToTarget {
   match() {
-    const targetName = this.applicationState?.targetName?.toLowerCase();
-    this.target = targets.find(target => target.name.toLowerCase() === targetName);
+    this.target = findTargetByName(this.ctx.state.targetName);
     return Boolean(this.target);
   }
 
@@ -32,13 +30,13 @@ class ProxyToTarget extends Component {
     logger.log(`PROXY TO TARGET: ${this.target.name}`);
     const protocol = new URL(this.target.url).protocol.replace(/s?:$/, '');
     const { proxy } = TARGET_TYPES[protocol];
-    this.resBody = await proxy({ url: this.target.url, reqBody: this.reqBody });
+    this.ctx.resBody = await proxy({ url: this.target.url, reqBody: this.ctx.reqBody });
   }
 
   replyError(e) {
     logger.log(e);
     const message = e.stack.split('\n').slice(0, 2).join('\n');
-    this.response = reply`
+    this.ctx.response = reply`
       ${tts('Ошибка')}
       ${text(message)}
     `;

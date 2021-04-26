@@ -1,14 +1,13 @@
 const { reply, buttons } = require('alice-renderer');
 const targets = require('./targets');
-const Component = require('./Component');
 
-module.exports = class ShowTargets extends Component {
+module.exports = class ShowTargets {
   match() {
-    return this.request.command.match(/список таргетов|покажи таргеты/);
+    return this.ctx.command.match(/список таргетов|покажи таргеты/);
   }
 
   reply() {
-    this.response = reply`
+    this.ctx.response = reply`
       Выберите таргет:
       ${buttons(this.buttons())}
     `;

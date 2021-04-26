@@ -1,12 +1,11 @@
 const { reply } = require('alice-renderer');
-const Component = require('./Component');
 
-module.exports = class PingPong extends Component {
+module.exports = class PingPong {
   match() {
-    return this.request.command === 'ping';
+    return this.ctx.command === 'ping';
   }
 
   reply() {
-    this.response = reply`pong`;
+    this.ctx.response = reply`pong`;
   }
 };

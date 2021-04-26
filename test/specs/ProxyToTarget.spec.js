@@ -6,9 +6,7 @@ describe('ProxyToTarget', () => {
     const scope = nock('https://my-webhook.ru')
     .post('/', reqBody => reqBody.request.command === 'привет')
     .reply(200, {
-      response: {
-        text: 'куку',
-      },
+      response: { text: 'куку' },
       version: '1.0'
     });
 
@@ -17,9 +15,8 @@ describe('ProxyToTarget', () => {
 
     scope.done();
     assert.deepEqual(user.body, {
-      response: {
-        text: 'куку',
-      },
+      response: { text: 'куку' },
+      application_state: { targetName: 'навык 1' },
       version: '1.0'
     });
   });

@@ -1,10 +1,10 @@
 /**
- * Debug local skill using amqp (RabbitMQ)
+ * Debug local skill on real device (uses amqp messaging via cloudamqp.com)
  * Usage:
- * AMQP_URL=<YOUR_AMQP_URL> node example/amqp
+ * node example/amqp-localhost
  */
+require('dotenv').config();
 const amqp = require('amqplib');
-// Require your skill
 const { handler } = require('./skill');
 
 const AMQP_URL = process.env.AMQP_URL;
@@ -27,7 +27,7 @@ async function createChannel() {
 
 async function sendMessage(channel, message) {
   await channel.assertQueue(FROM_SKILL_QUEUE);
-  await channel.sendToQueue(FROM_SKILL_QUEUE, Buffer.from(message));
+  await channel.sendToQueue(FROM_SKILL_QUEUE, Buffer.from(message), { expiration: 1000 });
 }
 
 async function listenMessages(channel) {

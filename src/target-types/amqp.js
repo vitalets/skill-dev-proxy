@@ -19,8 +19,11 @@ exports.proxy = async ({ url, reqBody }) => {
 };
 
 async function sendMessage(message) {
-  await channel.assertQueue(FROM_USER_QUEUE);
-  await channel.sendToQueue(FROM_USER_QUEUE, Buffer.from(message));
+  const { consumerCount } = await channel.assertQueue(FROM_USER_QUEUE);
+  if (consumerCount === 0) {
+    throw new Error('Нет получателей! Нужно запустить скрипт на локалхосте.');
+  }
+  await channel.sendToQueue(FROM_USER_QUEUE, Buffer.from(message), { expiration: 1000 });
 }
 
 async function waitMessage() {

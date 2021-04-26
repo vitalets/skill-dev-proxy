@@ -8,6 +8,7 @@
     "test:log": "mocha test/setup test/specs",
     "test": "LOG_LEVEL=error npm run test:log",
     "test:dist": "npm run build && HANDLER_PATH=../dist npm test",
+    "debug:amqp": "node test/debug-amqp",
     "build": "webpack"
   },
   "lint-staged": {
@@ -25,6 +26,7 @@
     "chai": "^4.3.4",
     "clean-webpack-plugin": "^4.0.0-alpha.0",
     "copy-webpack-plugin": "^8.1.1",
+    "dotenv": "^8.2.0",
     "eslint": "^7.24.0",
     "eslint-plugin-mocha": "^8.1.0",
     "lint-staged": "^10.5.4",

@@ -1,7 +1,7 @@
 /**
  * Debug local skill on real device (uses amqp messaging via cloudamqp.com)
  * Usage:
- * node example/amqp-localhost
+ * node examples/localhost/check-on-device
  */
 require('dotenv').config();
 const amqp = require('amqplib');

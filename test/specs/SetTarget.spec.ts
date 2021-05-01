@@ -8,6 +8,7 @@ describe('SetTarget', () => {
       'поставь target локал хост',
       'установи таргет localhost',
       'установить таргет local host',
+      'установить таргет около host',
     ];
     const user = new User();
     for (const input of inputs) {

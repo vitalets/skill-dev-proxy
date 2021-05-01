@@ -28,7 +28,7 @@ before(async () => {
   const { default: createHandler } = await import(process.env.HANDLER_PATH || '../src');
   const handler = createHandler([
     { name: 'навык 1', url: 'https://my-webhook.ru' },
-    { name: 'Локалхост', regexp: /(local|локал)\s?([hfp]ost|[хп]ост)/i, url: 'amqps://my-amqp-url' },
+    { name: 'Локалхост', regexp: /(local|локал|около)\s?([hfp]ost|[хп]ост)/i, url: 'amqps://my-amqp-url' },
   ]);
   User.config.webhookUrl = (reqBody: ReqBody) => handler(reqBody);
   User.config.stopWords = [];

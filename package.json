@@ -14,7 +14,10 @@
     "test": "LOG_LEVEL=fatal npm run test:log",
     "test:dist": "npm run build && HANDLER_PATH=../dist npm test",
     "debug:amqp": "ts-node test/debug-amqp",
-    "build": "rm -rf dist && tsc"
+    "build": "rm -rf dist && tsc",
+    "release": "npm run lint && npm run test:dist && npm version $VER && npm publish && git push --follow-tags --no-verify",
+    "release-patch": "VER=patch npm run release",
+    "release-minor": "VER=minor npm run release"
   },
   "lint-staged": {
     "{src,test}/**/*.ts": "eslint --ext .ts"

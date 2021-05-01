@@ -38,7 +38,7 @@ async function listenMessages(channel) {
     const resBody = await callHandler(reqBody);
     await sendMessage(channel, JSON.stringify(resBody));
   }, {noAck: true});
-  console.log('waiting...');
+  console.log('Waiting messages from user...');
 }
 
 async function callHandler(reqBody) {

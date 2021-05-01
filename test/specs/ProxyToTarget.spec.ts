@@ -40,7 +40,7 @@ describe('ProxyToTarget', () => {
     let timeout = 2800;
     if (!process.env.HANDLER_PATH) {
       // when testing src (not dist), we can change TIMEOUT of ProxyToTarget class.
-      const ProxyToTarget = require('../../src/ProxyToTarget');
+      const { ProxyToTarget } = await import('../../src/components/ProxyToTarget');
       timeout = ProxyToTarget.TIMEOUT = 100;
     }
     const responseDelay = timeout + 200;

@@ -12,7 +12,7 @@ describe('SetTarget', () => {
     assert.equal(user.state.application.targetName, 'Локалхост');
   });
 
-  it('set correct target (en)', async () => {
+  it('set correct target (by target match prop)', async () => {
     const user = new User();
 
     await user.say('установи target local host');

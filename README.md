@@ -25,7 +25,7 @@
     },
     {
       name: 'Локалхост',
-      regexp: /local\s?[hfp]ost/i,
+      regexp: /(local|локал)\s?([hfp]ost|[хп]ост)/i,
       url: 'amqps://my-amqp-url',
     },
   ]);

@@ -7,11 +7,11 @@ export class SetTarget extends Component {
   target?: Target;
 
   match() {
-    const matches = this.ctx.request.command.match(/(установи|поставь) (таргет|target) (.+)/);
+    const matches = this.ctx.request.command.match(/(установи(ть)?|поставь) (тар?гет|target) (?<targetName>.+)/);
     if (!matches) {
       return false;
     }
-    this.requestedTargetName = matches[3];
+    this.requestedTargetName = matches.groups?.targetName;
     this.target = targetManager.findByName(this.requestedTargetName);
     if (this.target) {
       this.ctx.state.targetName = this.target.name;

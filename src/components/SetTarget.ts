@@ -36,4 +36,4 @@ export class SetTarget extends Component {
       Таргет ${this.requestedTargetName} не найден.
     `;
   }
-};
+}

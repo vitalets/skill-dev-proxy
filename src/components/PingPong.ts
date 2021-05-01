@@ -9,4 +9,4 @@ export class PingPong extends Component {
   async reply() {
     this.ctx.response = reply`pong`;
   }
-};
+}

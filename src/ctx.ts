@@ -1,6 +1,8 @@
 import { ReqBody, Request, Session, ResBody, Response } from 'alice-types';
 
-type State = Record<string, any>;
+interface State {
+  targetName?: string;
+}
 
 export class Ctx {
   reqBody: ReqBody;
@@ -28,8 +30,8 @@ export class Ctx {
       };
     }
 
-    if (Object.keys(this.state as object).length > 0) {
+    if (Object.keys(this.state).length > 0) {
       this.resBody.application_state = Object.assign({}, this.resBody.application_state, this.state);
     }
   }
-};
+}

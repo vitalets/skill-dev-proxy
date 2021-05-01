@@ -18,7 +18,7 @@ declare global {
 
 chai.config.truncateThreshold = 0;
 
-Object.assign(global as any, {
+Object.assign(global, {
   assert: chai.assert,
   User,
   nock,

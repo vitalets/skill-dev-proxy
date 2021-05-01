@@ -11,7 +11,8 @@ export class Component {
     return true;
   }
 
-  async reply() {
-
+  reply() {
+    // tbd
+    return;
   }
 }

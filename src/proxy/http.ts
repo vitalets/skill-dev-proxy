@@ -21,7 +21,7 @@ export async function proxy(url: string, reqBody: ReqBody) {
     throw new Error(message);
   }
   return await response.json() as ResBody;
-};
+}
 
 async function buildErrorMessage(response: Response) {
   return [

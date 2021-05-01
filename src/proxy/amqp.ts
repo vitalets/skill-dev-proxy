@@ -21,7 +21,7 @@ export async function proxy(url: string, reqBody: ReqBody) {
   channel = channel || await conn.createChannel();
   await sendMessage(JSON.stringify(reqBody));
   return JSON.parse(await waitMessage()) as ResBody;
-};
+}
 
 async function sendMessage(message: string) {
   const { consumerCount } = await channel.assertQueue(FROM_USER_QUEUE);

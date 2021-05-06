@@ -4,7 +4,7 @@ import { Component } from './Component';
 
 export class ShowTargets extends Component {
   match() {
-    return Boolean(this.ctx.msg.match(/список таргетов|покажи таргеты/));
+    return Boolean(this.ctx.msg.match(/(список|покажи) (таргетов|таргеты)/));
   }
 
   async reply() {

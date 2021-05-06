@@ -3,7 +3,7 @@ import { reply } from 'alice-renderer';
 
 export class PingPong extends Component {
   match() {
-    return this.ctx.command === 'ping';
+    return this.ctx.msg === 'ping';
   }
 
   async reply() {

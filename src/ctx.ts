@@ -11,7 +11,7 @@ export class Ctx {
   state: State;
   resBody?: ResBody;
   response?: Response;
-  command: string;
+  msg: string;
 
   constructor(reqBody: ReqBody) {
     const { request, session, state } = reqBody;
@@ -19,7 +19,7 @@ export class Ctx {
     this.request = request;
     this.session = session;
     this.state = (state && state.application || {}) as State;
-    this.command = this.request.command;
+    this.msg = normalizeMessage(this.request.command);
   }
 
   buildResBody() {
@@ -34,4 +34,22 @@ export class Ctx {
       this.resBody.application_state = Object.assign({}, this.resBody.application_state, this.state);
     }
   }
+}
+
+/**
+ * Normalize message:
+ * - lowercase
+ * - ё -> е
+ * - remove waste words (if there are other words)
+ * - remove extra spaces
+ * - trim
+ */
+ export function normalizeMessage(msg?: string) {
+  return (msg || '')
+    .toLowerCase()
+    .replace(/ё/g, 'е')
+    .replace(/[^а-яa-z0-9]/g, ' ') // оставляем только буквы и цифры
+   // .replace(/алиса/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
 }

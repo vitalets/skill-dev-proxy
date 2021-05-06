@@ -2,6 +2,7 @@ import { ReqBody } from 'alice-types';
 import { logger } from './logger';
 import { Ctx } from './ctx';
 import { Target, targetManager } from './targets';
+import { errorHandler } from './error-handler';
 import { Component } from './components/Component';
 import { PingPong } from './components/PingPong';
 import { SetTarget } from './components/SetTarget';
@@ -16,17 +17,28 @@ const Components = [
   ShowTargets,
 ];
 
-export = createHandler;
+export = getHandler;
 
-function createHandler(targets: Target[]) {
+function getHandler(targets: Target[]) {
   targetManager.targets = targets;
-  return async (reqBody: ReqBody) => {
-    logger.log(`REQUEST: ${JSON.stringify(reqBody)}`);
+  return handler;
+}
+
+async function handler(reqBody: ReqBody) {
+  logger.log(`REQUEST: ${JSON.stringify(reqBody)}`);
+  const resBody = await buildResBody(reqBody);
+  logger.log(`RESPONSE: ${JSON.stringify(resBody)}`);
+  return resBody;
+}
+
+async function buildResBody(reqBody: ReqBody) {
+  try {
     const ctx = new Ctx(reqBody);
     await runComponents(ctx);
-    logger.log(`RESPONSE: ${JSON.stringify(ctx.resBody)}`);
     return ctx.resBody;
-  };
+  } catch (e) {
+    return errorHandler(e);
+  }
 }
 
 async function runComponents(ctx: Ctx) {
@@ -43,7 +55,7 @@ async function runComponents(ctx: Ctx) {
 
 async function runComponent(C: typeof Component, ctx: Ctx, { force = false } = {}) {
   const component = new C(ctx);
-  if (component.match() || force) {
+  if (force || component.match()) {
     await component.reply();
     ctx.buildResBody();
   }

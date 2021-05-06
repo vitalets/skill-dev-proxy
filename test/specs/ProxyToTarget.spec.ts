@@ -39,7 +39,7 @@ describe('ProxyToTarget', () => {
   it('proxy to http (timeout)', async function () {
     let timeout = 2800;
     if (!process.env.HANDLER_PATH) {
-      // when testing src (not dist), we can change TIMEOUT of ProxyToTarget class.
+      // when testing src (not dist), we can reduce TIMEOUT of ProxyToTarget class.
       const { ProxyToTarget } = await import('../../src/components/ProxyToTarget');
       timeout = ProxyToTarget.TIMEOUT = 100;
     }
@@ -58,7 +58,7 @@ describe('ProxyToTarget', () => {
 
     scope.done();
     assert.include(user.response.text, 'Таймаут таргета навык 1');
-    assert.include(user.response.tts, 'Ошибка');
+    assert.include(user.response.tts, 'Таймаут таргета навык 1');
   });
 
 });

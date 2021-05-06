@@ -3,9 +3,7 @@
  */
 
 import { ReqBody, ResBody } from 'alice-types';
-import type { Connection, Channel } from 'amqplib';
-// import amqplib dynamically on demand
-const getAmqplib = async () => (await import('amqplib')).default;
+import amqplib, { Connection, Channel } from 'amqplib';
 
 const FROM_USER_QUEUE = 'from-user';
 const FROM_SKILL_QUEUE = 'from-skill';
@@ -14,10 +12,7 @@ let conn: Connection;
 let channel: Channel;
 
 export async function proxy(url: string, reqBody: ReqBody) {
-  if (!conn) {
-    const amqplib = await getAmqplib();
-    conn = await amqplib.connect(url);
-  }
+  conn = conn || await amqplib.connect(url);
   channel = channel || await conn.createChannel();
   await sendMessage(JSON.stringify(reqBody));
   return JSON.parse(await waitMessage()) as ResBody;

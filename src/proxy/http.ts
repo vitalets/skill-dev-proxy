@@ -2,9 +2,7 @@
  * Proxy to http url.
  */
 import { ReqBody, ResBody } from 'alice-types';
-import type { Response } from 'node-fetch';
-// import fetch dynamically on demand
-const getFetch = async () => (await import('node-fetch')).default;
+import fetch, { Response } from 'node-fetch';
 
 const headers = {
   'Accept': 'application/json',
@@ -13,7 +11,6 @@ const headers = {
 const method = 'POST';
 
 export async function proxy(url: string, reqBody: ReqBody) {
-  const fetch = await getFetch();
   const body = JSON.stringify(reqBody);
   const response = await fetch(url, { method, headers, body });
   if (!response.ok) {

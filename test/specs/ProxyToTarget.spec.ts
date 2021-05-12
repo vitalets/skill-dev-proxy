@@ -34,6 +34,9 @@ describe('ProxyToTarget', () => {
     scope.done();
     assert.include(user.response.text, '500 Internal Server Error something broken');
     assert.include(user.response.tts, 'Ошибка');
+    assert.deepEqual(user.response.buttons, [
+      { title: 'Список таргетов', hide: true }
+    ]);
   });
 
   it('proxy to http (timeout)', async function () {

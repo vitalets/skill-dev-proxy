@@ -1,5 +1,5 @@
 import { ResBody } from 'alice-types';
-import { reply, text, tts } from 'alice-renderer';
+import { reply, text, tts, buttons } from 'alice-renderer';
 import { logger } from './logger';
 
 export function errorHandler(e: Error) {
@@ -9,6 +9,7 @@ export function errorHandler(e: Error) {
   const response = reply`
     ${tts(ttsMessage)}
     ${text(textMessage)}
+    ${buttons([ 'Список таргетов' ])}
   `;
   return {
     response,

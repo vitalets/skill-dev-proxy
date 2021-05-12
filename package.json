@@ -1,7 +1,7 @@
 {
   "name": "skill-dev-proxy",
   "description": "Proxy skill for Alice for testing other skills",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "main": "dist/index.js",
   "files": [
     "dist",

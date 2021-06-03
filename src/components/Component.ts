@@ -7,11 +7,11 @@ export class Component {
     this.ctx = ctx;
   }
 
-  match() {
+  match(): boolean | undefined {
     return true;
   }
 
-  async reply() {
-    return;
+  async reply() { // eslint-disable-line @typescript-eslint/no-empty-function
+
   }
 }

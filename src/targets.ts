@@ -7,13 +7,11 @@ export interface Target {
 class TargetManager {
   targets: Target[] = [];
 
-  findByName(name: unknown) {
-    if (name && typeof name === 'string') {
-      name = name.toLowerCase();
-      return this.targets.find(target => {
-        return (target.name.toLowerCase() === name) || (target.regexp && target.regexp.test(name as string));
-      });
-    }
+  findInString(str: string) {
+    str = str.toLowerCase();
+    return this.targets.find(target => {
+      return str.includes(target.name.toLowerCase()) || (target.regexp && target.regexp.test(str));
+    });
   }
 }
 

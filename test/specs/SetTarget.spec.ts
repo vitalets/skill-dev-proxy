@@ -10,6 +10,7 @@ describe('SetTarget', () => {
       'установить таргет local host',
       'установить таргет около host',
       'алиса установи таргет около host',
+      'target localhost',
     ];
     const user = new User();
     for (const input of inputs) {
@@ -18,15 +19,6 @@ describe('SetTarget', () => {
       assert.include(user.response.text, 'Локалхост', input);
       assert.equal(user.state.application.targetName, 'Локалхост', input);
     }
-  });
-
-  it('set incorrect target', async () => {
-    const user = new User();
-
-    await user.say('установи таргет foo');
-
-    assert.notInclude(user.response.text, SET_TARGET_KEYWORD);
-    assert.include(user.response.text, 'Таргет foo не найден');
   });
 
 });

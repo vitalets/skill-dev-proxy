@@ -8,7 +8,7 @@ export class Ctx {
   reqBody: ReqBody;
   request: Request;
   session: Session;
-  state: State;
+  targetName = '';
   resBody?: ResBody;
   response?: Response;
   msg: string;
@@ -18,7 +18,7 @@ export class Ctx {
     this.reqBody = reqBody;
     this.request = request;
     this.session = session;
-    this.state = (state && state.application || {}) as State;
+    this.targetName = (state?.application as State)?.targetName || '';
     this.msg = normalizeMessage(this.request.command);
   }
 
@@ -30,9 +30,8 @@ export class Ctx {
       };
     }
 
-    if (Object.keys(this.state).length > 0) {
-      this.resBody.application_state = Object.assign({}, this.resBody.application_state, this.state);
-    }
+    this.resBody.application_state = this.resBody.application_state || {};
+    (this.resBody.application_state as State).targetName = this.targetName;
   }
 }
 

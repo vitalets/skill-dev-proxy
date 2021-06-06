@@ -8,7 +8,7 @@ export class SetTarget extends Component {
   match() {
     this.target = targetManager.findInString(this.ctx.request.command);
     if (this.target) {
-      this.ctx.state.targetName = this.target.name;
+      this.ctx.targetName = this.target.name;
       return true;
     }
   }

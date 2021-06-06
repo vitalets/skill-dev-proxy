@@ -9,8 +9,8 @@ export class ProxyToTarget extends Component {
   target?: Target;
 
   match() {
-    if (this.ctx.state.targetName) {
-      this.target = targetManager.findInString(this.ctx.state.targetName);
+    if (this.ctx.targetName) {
+      this.target = targetManager.findInString(this.ctx.targetName);
       return Boolean(this.target);
     }
   }

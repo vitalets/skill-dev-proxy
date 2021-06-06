@@ -7,16 +7,17 @@ describe('ProxyToTarget', () => {
     .post('/', reqBody => reqBody.request.command === 'привет')
     .reply(200, {
       response: { text: 'куку' },
+      application_state: { foo: 42 },
       version: '1.0'
     });
 
     await user.say('установи таргет навык 1');
-    await user.say('привет');
+    await user.say('привет', (reqBody: any) => reqBody.state.application.foo = 100);
 
     scope.done();
     assert.deepEqual(user.body, {
       response: { text: 'куку' },
-      application_state: { targetName: 'навык 1' },
+      application_state: { targetName: 'навык 1', foo: 42 },
       version: '1.0'
     });
   });

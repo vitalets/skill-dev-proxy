@@ -8,7 +8,7 @@ class TargetManager {
   targets: Target[] = [];
 
   findInString(str: string) {
-    str = str.toLowerCase();
+    str = (str || '').toLowerCase();
     return this.targets.find(target => {
       return str.includes(target.name.toLowerCase()) || (target.regexp && target.regexp.test(str));
     });

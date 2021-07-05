@@ -10,16 +10,17 @@ export class ShowTargets extends Component {
   async reply() {
     this.ctx.response = reply`
       Выберите таргет:
-      ${buttons(this.buttons())}
+      ${this.buttons()}
     `;
   }
 
   buttons() {
-    return targetManager.targets.map(target => {
+    const items = targetManager.targets.map(target => {
       return {
-        title: `Установи таргет ${target.name}`,
+        title: target.name,
         hide: false
       };
     });
+    return buttons(items);
   }
 }

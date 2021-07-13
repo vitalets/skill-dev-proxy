@@ -25,8 +25,8 @@ Object.assign(global, {
 });
 
 before(async () => {
-  const { default: createHandler } = await import(process.env.HANDLER_PATH || '../src');
-  const handler = createHandler([
+  const { getHandler } = await import(process.env.HANDLER_PATH || '../src');
+  const handler = getHandler([
     { name: 'навык 1', url: 'https://my-webhook.ru' },
     { name: 'Локалхост', regexp: /(local|локал|около)\s?([hfp]ost|[хп]ост)/i, url: 'amqps://my-amqp-url' },
   ]);

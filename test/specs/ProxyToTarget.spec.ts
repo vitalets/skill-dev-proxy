@@ -1,3 +1,8 @@
+// берем оттуда только значение таймаута,
+// поэтому можно использовать даже при тестах ./dist
+import { ProxyToTarget } from '../../src/components/ProxyToTarget';
+import { isTestingDist } from '../setup';
+
 describe('ProxyToTarget', () => {
 
   it('proxy to http (success)', async () => {
@@ -12,6 +17,7 @@ describe('ProxyToTarget', () => {
     });
 
     await user.say('установи таргет навык 1');
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await user.say('привет', (reqBody: any) => reqBody.state.application.foo = 100);
 
     scope.done();
@@ -41,13 +47,11 @@ describe('ProxyToTarget', () => {
   });
 
   it('proxy to http (timeout)', async function () {
-    let timeout = 2800;
-    if (!process.env.HANDLER_PATH) {
-      // when testing src (not dist), we can reduce TIMEOUT of ProxyToTarget class.
-      const { ProxyToTarget } = await import('../../src/components/ProxyToTarget');
-      timeout = ProxyToTarget.TIMEOUT = 100;
+    // reduce timeout when testing ./src (not ./dist)
+    if (!isTestingDist) {
+      sinon.stub(ProxyToTarget, 'TIMEOUT').value(100);
     }
-    const responseDelay = timeout + 200;
+    const responseDelay = ProxyToTarget.TIMEOUT + 200;
     this.timeout(responseDelay);
 
     const user = new User();
@@ -64,6 +68,5 @@ describe('ProxyToTarget', () => {
     assert.include(user.response.text, 'Таймаут таргета навык 1');
     assert.include(user.response.tts, 'Таймаут таргета навык 1');
   });
-
 });
 

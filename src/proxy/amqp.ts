@@ -5,20 +5,26 @@
 import { ReqBody, ResBody } from 'alice-types';
 import amqplib, { Connection, Channel } from 'amqplib';
 
-const FROM_USER_QUEUE = 'from-user';
-const FROM_SKILL_QUEUE = 'from-skill';
+export const FROM_USER_QUEUE = 'from-user';
+export const FROM_SKILL_QUEUE = 'from-skill';
 
-let conn: Connection;
+let connection: Connection | null;
 let channel: Channel;
 
 export async function proxy(url: string, reqBody: ReqBody) {
-  conn = conn || await amqplib.connect(url);
-  channel = channel || await conn.createChannel();
-  await sendMessage(JSON.stringify(reqBody));
-  return JSON.parse(await waitMessage()) as ResBody;
+  const reuseConnection = Boolean(connection);
+  connection = connection || await amqplib.connect(url);
+  channel = reuseConnection && channel ? channel : await connection.createChannel();
+  await sendMessageFromUser(JSON.stringify(reqBody));
+  return JSON.parse(await waitMessageFromSkill()) as ResBody;
 }
 
-async function sendMessage(message: string) {
+export async function close() {
+  await connection?.close();
+  connection = null;
+}
+
+async function sendMessageFromUser(message: string) {
   const { consumerCount } = await channel.assertQueue(FROM_USER_QUEUE);
   if (consumerCount === 0) {
     throw new Error('Нет получателей! Нужно запустить скрипт на локалхосте.');
@@ -26,7 +32,7 @@ async function sendMessage(message: string) {
   channel.sendToQueue(FROM_USER_QUEUE, Buffer.from(message), { expiration: 1000 });
 }
 
-async function waitMessage() {
+async function waitMessageFromSkill() {
   let resolve: (value: string) => void;
   const promise = new Promise<string>(r => resolve = r);
   await channel.assertQueue(FROM_SKILL_QUEUE);

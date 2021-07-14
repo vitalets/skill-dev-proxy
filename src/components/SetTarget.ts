@@ -1,6 +1,7 @@
 import { reply } from 'alice-renderer';
 import { targetManager, Target } from '../targets';
 import { Component } from './Component';
+import { close as closeAmqpConnection } from '../proxy/amqp';
 
 export class SetTarget extends Component {
   target?: Target;
@@ -14,6 +15,8 @@ export class SetTarget extends Component {
   }
 
   async reply() {
+    // закрываем amqp коннект при смене таргета
+    await closeAmqpConnection();
     this.ctx.response = reply`
       Выбран таргет ${this.target!.name}.
     `;

@@ -1,4 +1,4 @@
-import { ReqBody } from 'alice-types';
+import { ReqBody, ResBody } from 'alice-types';
 
 const PROXY_TYPES = {
   http: () => import('./http'),
@@ -8,7 +8,7 @@ const PROXY_TYPES = {
 export async function proxy(url: string, reqBody: ReqBody) {
   const protocol = extractProtocol(url) as keyof typeof PROXY_TYPES;
   const { proxy: proxyFn } = await PROXY_TYPES[protocol]();
-  return proxyFn(url, reqBody);
+  return await proxyFn(url, reqBody) as ResBody;
 }
 
 function extractProtocol(url: string) {

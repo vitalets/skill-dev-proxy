@@ -1,7 +1,7 @@
-import { Target, targetManager } from './targets';
-import { handler } from './handler';
+import { getHandler } from './handler';
+import { waitMessages } from './wait-messages';
 
-export function getHandler(targets: Target[]) {
-  targetManager.targets = targets;
-  return handler;
-}
+export {
+  getHandler,
+  waitMessages,
+};

@@ -1,7 +1,6 @@
 /**
  * Proxy to http url.
  */
-import { ReqBody, ResBody } from 'alice-types';
 import fetch, { Response } from 'node-fetch';
 
 const headers = {
@@ -10,14 +9,14 @@ const headers = {
 };
 const method = 'POST';
 
-export async function proxy(url: string, reqBody: ReqBody) {
+export async function proxy(url: string, reqBody: unknown) {
   const body = JSON.stringify(reqBody);
   const response = await fetch(url, { method, headers, body });
   if (!response.ok) {
     const message = await buildErrorMessage(response);
     throw new Error(message);
   }
-  return await response.json() as ResBody;
+  return response.json();
 }
 
 async function buildErrorMessage(response: Response) {

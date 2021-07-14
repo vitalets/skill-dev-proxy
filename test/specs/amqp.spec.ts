@@ -21,7 +21,7 @@ describe('amqp (e2e)', () => {
     if (isTestingDist) {
       const { getHandler, waitMessages } = await getSrc();
       user = new User(getHandler([ { name: 'Локалхост', url: AMQP_URL } ]));
-      connection = await waitMessages({ amqpUrl: AMQP_URL, handler: skill });
+      connection = await waitMessages({ amqpUrl: AMQP_URL, handler: skill, logging: false });
     } else {
       this.skip();
     }

@@ -5,6 +5,7 @@
 import amqp, { Connection, Channel } from 'amqplib';
 import { FROM_USER_QUEUE, FROM_SKILL_QUEUE } from './proxy/amqp';
 import { proxy as httpProxy } from './proxy/http';
+import { Defaults } from './utils';
 
 const CLOUD_REQUEST_ID = 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx';
 
@@ -19,9 +20,9 @@ export interface WaitOptions {
   logging?: boolean;
 }
 
-class defaults implements Partial<WaitOptions> {
-  logging = true
-}
+const defaults: Defaults<WaitOptions> = {
+  logging: true,
+};
 
 class Wait {
   options: Required<WaitOptions>;
@@ -29,7 +30,7 @@ class Wait {
   channel!: Channel;
 
   constructor(options: WaitOptions) {
-    this.options = Object.assign(new defaults(), options);
+    this.options = Object.assign({}, defaults, options);
   }
 
   async run() {

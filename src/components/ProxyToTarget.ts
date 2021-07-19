@@ -1,27 +1,30 @@
 import Timeout from 'await-timeout';
-import { Target, targetManager } from '../targets';
+import { targetManager } from '../target-manager';
 import { logger } from '../logger';
-import { proxy } from '../proxy';
+import { proxyWs } from '../proxy/ws';
+import { proxyHttp } from '../proxy/http';
 import { Component } from './Component';
 
 export class ProxyToTarget extends Component {
   static TIMEOUT = 2800;
-  target?: Target;
 
   match() {
-    if (this.ctx.targetName) {
-      this.target = targetManager.findInString(this.ctx.targetName);
-      return Boolean(this.target);
-    }
+    return Boolean(targetManager.selectedTarget);
   }
 
   async reply() {
-    await Timeout.wrap(this.proxyRequest(), ProxyToTarget.TIMEOUT, `Таймаут таргета ${this.target!.name}`);
+    await Timeout.wrap(
+      this.proxyRequest(),
+      ProxyToTarget.TIMEOUT,
+      `Таймаут таргета ${targetManager.selectedTarget!.name}`
+    );
   }
 
   async proxyRequest() {
-    const { name, url } = this.target!;
+    const { name, url } = targetManager.selectedTarget!;
     logger.log(`PROXY TO TARGET: ${name}`);
-    this.ctx.resBody = await proxy(url, this.ctx.reqBody);
+    this.ctx.resBody = url === 'websocket'
+      ? await proxyWs(this.ctx.reqBody)
+      : await proxyHttp(url, this.ctx.reqBody);
   }
 }

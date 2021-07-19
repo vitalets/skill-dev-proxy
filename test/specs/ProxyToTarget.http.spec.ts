@@ -1,34 +1,28 @@
-// берем оттуда только значение таймаута,
-// поэтому можно использовать даже при тестах ./dist
 import { ProxyToTarget } from '../../src/components/ProxyToTarget';
-import { isTestingDist } from '../setup';
 
-describe('ProxyToTarget', () => {
+describe('ProxyToTarget (http)', () => {
 
-  it('proxy to http (success)', async () => {
+  it('success', async () => {
     const user = new User();
 
     const scope = nock('https://my-webhook.ru')
-    .post('/', reqBody => reqBody.request.command === 'привет')
+    .post('/')
     .reply(200, {
       response: { text: 'куку' },
-      application_state: { foo: 42 },
       version: '1.0'
     });
 
     await user.say('установи таргет навык 1');
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    await user.say('привет', (reqBody: any) => reqBody.state.application.foo = 100);
+    await user.say('привет');
 
     scope.done();
     assert.deepEqual(user.body, {
       response: { text: 'куку' },
-      application_state: { targetName: 'навык 1', foo: 42 },
       version: '1.0'
     });
   });
 
-  it('proxy to http (error)', async () => {
+  it('error', async () => {
     const user = new User();
 
     const scope = nock('https://my-webhook.ru')
@@ -46,27 +40,21 @@ describe('ProxyToTarget', () => {
     ]);
   });
 
-  it('proxy to http (timeout)', async function () {
-    // reduce timeout when testing ./src (not ./dist)
-    if (!isTestingDist) {
-      sinon.stub(ProxyToTarget, 'TIMEOUT').value(100);
-    }
-    const responseDelay = ProxyToTarget.TIMEOUT + 200;
-    this.timeout(responseDelay);
-
+  it('timeout', async () => {
+    sinon.stub(ProxyToTarget, 'TIMEOUT').value(100);
     const user = new User();
 
     const scope = nock('https://my-webhook.ru')
     .post('/')
-    .delay(responseDelay)
+    .delay(ProxyToTarget.TIMEOUT + 200)
     .reply(200);
 
     await user.say('установи таргет навык 1');
     await user.say('привет');
 
     scope.done();
-    assert.include(user.response.text, 'Таймаут таргета навык 1');
-    assert.include(user.response.tts, 'Таймаут таргета навык 1');
+    assert.include(user.response.text, 'Таймаут таргета Навык 1');
+    assert.include(user.response.tts, 'Таймаут таргета Навык 1');
   });
 });
 

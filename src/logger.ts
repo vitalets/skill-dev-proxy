@@ -1,9 +1,10 @@
-import consoleLogLevel from 'console-log-level';
+import consoleLogLevel, { LogLevelNames } from 'console-log-level';
+import { logLevel } from './env';
 
-const level = (process.env.LOG_LEVEL || 'info') as consoleLogLevel.LogLevelNames;
-
-type Logger = Record<consoleLogLevel.LogLevelNames | 'log', (...args: unknown[]) => void>;
-
-export const logger = consoleLogLevel({ level }) as Logger;
-
-logger.log = logger.info;
+export type Logger = Record<LogLevelNames | 'log', (...args: unknown[]) => void>;
+export function createLogger(...args: Parameters<typeof consoleLogLevel>) {
+  const logger = consoleLogLevel(...args) as Logger;
+  logger.log = logger.info;
+  return logger;
+}
+export const logger = createLogger({ level: logLevel as LogLevelNames });

@@ -1,5 +1,4 @@
 import { ReqBody } from 'alice-types';
-import { Target, targetManager } from './targets';
 import { logger } from './logger';
 import { Ctx } from './ctx';
 import { errorHandler } from './error-handler';
@@ -17,12 +16,7 @@ const Components = [
   ShowTargets,
 ];
 
-export function getHandler(targets: Target[]) {
-  targetManager.targets = targets;
-  return handler;
-}
-
-async function handler(reqBody: ReqBody) {
+export async function handleUserMessage(reqBody: ReqBody) {
   logger.log(`REQUEST: ${JSON.stringify(reqBody)}`);
   const resBody = await buildResBody(reqBody);
   logger.log(`RESPONSE: ${JSON.stringify(resBody)}`);
@@ -39,6 +33,7 @@ async function buildResBody(reqBody: ReqBody) {
   }
 }
 
+// todo: user bot-components? (botz)
 async function runComponents(ctx: Ctx) {
   for (const C of Components) {
     await runComponent(C, ctx);

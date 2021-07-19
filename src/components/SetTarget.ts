@@ -1,24 +1,21 @@
 import { reply } from 'alice-renderer';
-import { targetManager, Target } from '../targets';
+import { targetManager } from '../target-manager';
+import { logger } from '../logger';
 import { Component } from './Component';
-import { close as closeAmqpConnection } from '../proxy/amqp';
 
 export class SetTarget extends Component {
-  target?: Target;
-
   match() {
-    this.target = targetManager.findInString(this.ctx.request.command);
-    if (this.target) {
-      this.ctx.targetName = this.target.name;
+    const target = targetManager.matchTarget(this.ctx.userMessage);
+    if (target) {
+      logger.log(`SET TARGET: ${target.name}`);
+      targetManager.selectedTarget = target;
       return true;
     }
   }
 
   async reply() {
-    // закрываем amqp коннект при смене таргета
-    await closeAmqpConnection();
     this.ctx.response = reply`
-      Выбран таргет ${this.target!.name}.
+      Выбран таргет ${targetManager.selectedTarget!.name}.
     `;
   }
 }

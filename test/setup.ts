@@ -1,15 +1,14 @@
 // See: https://github.com/TypeStrong/ts-node#help-my-types-are-missing
 /// <reference types="../src/externals" />
 
-import 'dotenv/config';
+import targets from './targets.json';
 import chai from 'chai';
 import nock from 'nock';
 import sinon from 'sinon';
+import getPort from 'get-port';
 import User from 'alice-tester';
-import { ReqBody } from 'alice-types';
-
-export const isTestingDist = process.env.TEST_TARGET === 'dist';
-export const getSrc = () => import(isTestingDist ? '../dist' : '../src');
+import { server } from '../src/http/server';
+import { targetManager } from '../src/target-manager';
 
 type AssertType = typeof chai.assert;
 type UserType = typeof User;
@@ -33,24 +32,22 @@ Object.assign(global, {
 });
 
 before(async () => {
-  const { getHandler } = await getSrc();
-  const handler = getHandler([
-    {
-      name: 'навык 1',
-      url: 'https://my-webhook.ru'
-    },
-    {
-      name: 'Локалхост',
-      regexp: /(local|локал|около)\s?([hfp]ost|[хп]ост)/i,
-      url: 'amqps://my-amqp-url'
-    },
-  ]);
-  User.config.webhookUrl = (reqBody: ReqBody) => handler(reqBody);
+  const port = await getPort();
+  await server.start(port);
+  User.config.webhookUrl = `http://localhost:${port}`;
   User.config.stopWords = [];
   User.config.responseTimeout = 0;
+});
+
+beforeEach(() => {
+  targetManager.init(JSON.stringify(targets));
 });
 
 afterEach(() => {
   nock.cleanAll();
   sinon.restore();
+});
+
+after(async () => {
+  await server.stop();
 });

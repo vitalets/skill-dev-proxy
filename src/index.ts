@@ -1,7 +1,5 @@
-import { getHandler } from './handler';
-import { waitMessages } from './wait-messages';
+import { runClient } from './run/client';
 
 export {
-  getHandler,
-  waitMessages,
+  runClient,
 };

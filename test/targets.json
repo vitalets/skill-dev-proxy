@@ -1,0 +1,11 @@
+[
+  {
+    "name": "Локалхост",
+    "regexp": "(local|локал|около)\\s?([hfp]ost|[хп]ост)",
+    "url": "websocket"
+  },
+  {
+    "name": "Навык 1",
+    "url": "https://my-webhook.ru"
+  }
+]

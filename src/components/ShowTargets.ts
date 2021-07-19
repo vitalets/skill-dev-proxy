@@ -1,10 +1,10 @@
 import { reply, buttons } from 'alice-renderer';
-import { targetManager } from '../targets';
+import { targetManager } from '../target-manager';
 import { Component } from './Component';
 
 export class ShowTargets extends Component {
   match() {
-    return Boolean(this.ctx.msg.match(/(список|покажи) (таргетов|таргеты)/));
+    return Boolean(this.ctx.userMessage.match(/(список|покажи) (таргетов|таргеты)/));
   }
 
   async reply() {

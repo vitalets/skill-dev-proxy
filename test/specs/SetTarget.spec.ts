@@ -18,7 +18,6 @@ describe('SetTarget', () => {
       await user.say(input);
       assert.include(user.response.text, SET_TARGET_KEYWORD, input);
       assert.include(user.response.text, 'Локалхост', input);
-      assert.equal(user.state.application.targetName, 'Локалхост', input);
     }
   });
 
@@ -28,7 +27,6 @@ describe('SetTarget', () => {
     await user.tap('Локалхост');
     assert.include(user.response.text, SET_TARGET_KEYWORD);
     assert.include(user.response.text, 'Локалхост');
-    assert.equal(user.state.application.targetName, 'Локалхост');
   });
 
 });

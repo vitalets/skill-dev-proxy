@@ -9,7 +9,7 @@ const headers = {
 };
 const method = 'POST';
 
-export async function proxy(url: string, reqBody: unknown) {
+export async function proxyHttp(url: string, reqBody: unknown) {
   const body = JSON.stringify(reqBody);
   const response = await fetch(url, { method, headers, body });
   if (!response.ok) {

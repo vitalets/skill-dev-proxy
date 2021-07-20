@@ -47,7 +47,6 @@
     "alice-tester": "^2.1.1",
     "alice-types": "^1.0.1",
     "chai": "^4.3.4",
-    "dotenv": "^8.2.0",
     "eslint": "^7.24.0",
     "eslint-plugin-mocha": "^8.1.0",
     "get-port": "^5.1.1",

@@ -40,10 +40,10 @@
 2. Заведите в проекте скрипт, который будет слушаеть запросы и вызывать ваш код. Пример:
   ```js
   // check.js
-  const { waitMessages } = require('skill-dev-proxy');
+  const { runClient } = require('skill-dev-proxy');
   const { handler } = require('./skill');
 
-  waitMessages({
+  runClient({
     wsUrl: 'https://xxx.herokuapp.com', // <-- замените на ваш урл на хероку
     handler,
   });

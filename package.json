@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "init": "git config core.hooksPath ./.hooks",
-    "lint": "eslint src test --ext .ts && tsc --noEmit",
+    "lint": "eslint src test --ext .ts",
     "test:l": "mocha -r ts-node/register test/setup.ts test/specs/*.ts",
     "test": "LOG_LEVEL=fatal npm run test:l",
     "debug:amqp": "ts-node test/debug-amqp",

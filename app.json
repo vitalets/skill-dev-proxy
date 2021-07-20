@@ -1,7 +1,7 @@
 {
   "env": {
     "TARGETS": {
-      "value": "\"[\\n  {\\n    \\\"name\\\": \\\"Локалхост\\\",\\n    \\\"regexp\\\": \\\"(local|локал|около)\\\\s?([hfp]ost|[хп]ост)\\\",\\n    \\\"url\\\": \\\"websocket\\\"\\n  },\\n  {\\n    \\\"name\\\": \\\"Навык 1\\\",\\n    \\\"url\\\": \\\"https://my-webhook.ru\\\"\\n  }\\n]\""
+      "value": "[{\"name\":\"Локалхост\",\"regexp\":\"(local|локал|около)\\\\s?([hfp]ost|[хп]ост)\",\"url\":\"websocket\"},{\"name\":\"Мой навык 1\",\"url\":\"https://my-webhook.ru\"}]"
     }
   }
 }

@@ -14,7 +14,7 @@
     "test": "LOG_LEVEL=fatal npm run test:l",
     "build": "rm -rf dist && tsc",
     "deploy:heroku": "git push heroku",
-    "release": "npm run lint && npm run test:dist && npm version $VER && npm publish && git push --follow-tags --no-verify",
+    "release": "npm run lint && npm t && npm version $VER && npm publish && git push --follow-tags --no-verify",
     "release-patch": "VER=patch npm run release",
     "release-minor": "VER=minor npm run release"
   },

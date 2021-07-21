@@ -22,9 +22,10 @@
     "{src,test}/**/*.ts": "eslint --ext .ts"
   },
   "engines": {
-    "node": "16"
+    "node": "14"
   },
   "dependencies": {
+    "abort-controller": "^3.0.0",
     "alice-renderer": "^1.1.0",
     "await-timeout": "^1.1.1",
     "console-log-level": "^1.4.1",

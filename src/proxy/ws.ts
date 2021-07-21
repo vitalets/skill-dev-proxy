@@ -4,6 +4,7 @@
 import { once } from 'events';
 import { IMessage } from 'websocket';
 import { server } from '../http/server';
+import AbortController from 'abort-controller';
 
 let ac: AbortController;
 

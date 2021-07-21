@@ -9,8 +9,8 @@ export function setRoutes(app: Application) {
 }
 
 const showTargets: RequestHandler = (req, res) => {
-  const targetNames = targetManager.targets.map(target => target.name).join(', ');
-  res.send(`Running. Targets: ${targetNames}`);
+  const targetNames = targetManager.targets.map(target => target.name).join('\n');
+  res.send(`Работает. Таргеты:\n${targetNames}`);
 };
 
 const skillHandler: RequestHandler = asyncHandler(async (req, res) => {

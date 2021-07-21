@@ -4,11 +4,11 @@ import { Component } from './Component';
 
 export class ShowTargets extends Component {
   match() {
-    return Boolean(this.ctx.userMessage.match(/(список|покажи) (таргетов|таргеты)/));
+    return /(список|покажи) (таргетов|таргеты)/.test(this.ctx.userMessage);
   }
 
   async reply() {
-    this.ctx.response = reply`
+    return reply`
       Выберите таргет:
       ${this.buttons()}
     `;

@@ -1,4 +1,4 @@
-import { ReqBody } from 'alice-types';
+import { ReqBody, ResBody } from 'alice-types';
 import { logger } from './logger';
 import { Ctx } from './ctx';
 import { errorHandler } from './error-handler';
@@ -7,13 +7,15 @@ import { PingPong } from './components/PingPong';
 import { SetTarget } from './components/SetTarget';
 import { ShowTargets } from './components/ShowTargets';
 import { ProxyToTarget } from './components/ProxyToTarget';
+import { ClearState } from './components/ClearState';
 
 const Components = [
   PingPong,
   SetTarget,
   ShowTargets,
+  ClearState,
   ProxyToTarget,
-  ShowTargets,
+  ShowTargets, // <- default component
 ];
 
 export async function handleUserMessage(reqBody: ReqBody) {
@@ -36,8 +38,8 @@ async function buildResBody(reqBody: ReqBody) {
 // todo: user bot-components? (botz)
 async function runComponents(ctx: Ctx) {
   for (const C of Components) {
-    await runComponent(C, ctx);
-    if (ctx.resBody) {
+    const handled = await runComponent(C, ctx);
+    if (handled) {
       return;
     }
   }
@@ -49,7 +51,10 @@ async function runComponents(ctx: Ctx) {
 async function runComponent(C: typeof Component, ctx: Ctx, { force = false } = {}) {
   const component = new C(ctx);
   if (force || component.match()) {
-    await component.reply();
-    ctx.buildResBody();
+    const response = await component.reply() as unknown as ResBody['response'];
+    if (response) {
+      ctx.resBody.response = response;
+    }
+    return true;
   }
 }

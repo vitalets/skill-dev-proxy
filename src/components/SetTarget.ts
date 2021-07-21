@@ -14,7 +14,7 @@ export class SetTarget extends Component {
   }
 
   async reply() {
-    this.ctx.response = reply`
+    return reply`
       Выбран таргет ${targetManager.selectedTarget!.name}.
     `;
   }

@@ -33,6 +33,7 @@ export class Client {
   }
 
   async run() {
+    this.logger.log('Connecting...');
     this.ws.connect(this.options.wsUrl);
     this.wsConnection = (await once(this.ws, 'connect'))[0] as Connection;
     this.logger.log('Connected.');

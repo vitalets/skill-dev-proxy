@@ -1,4 +1,4 @@
-import { reply } from 'alice-renderer';
+import { reply, buttons } from 'alice-renderer';
 import { targetManager } from '../target-manager';
 import { logger } from '../logger';
 import { Component } from './Component';
@@ -16,6 +16,7 @@ export class SetTarget extends Component {
   async reply() {
     return reply`
       Выбран таргет ${targetManager.selectedTarget!.name}.
+      ${buttons[ 'Поехали' ]}
     `;
   }
 }

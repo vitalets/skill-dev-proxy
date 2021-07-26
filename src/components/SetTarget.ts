@@ -16,7 +16,7 @@ export class SetTarget extends Component {
   async reply() {
     return reply`
       Выбран таргет ${targetManager.selectedTarget!.name}.
-      ${buttons[ 'Поехали' ]}
+      ${buttons([ 'Поехали' ])}
     `;
   }
 }

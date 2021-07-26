@@ -18,6 +18,9 @@ describe('SetTarget', () => {
       await user.say(input);
       assert.include(user.response.text, SET_TARGET_KEYWORD, input);
       assert.include(user.response.text, 'Локалхост', input);
+      assert.deepEqual(user.response.buttons, [
+        { hide: true, title: 'Поехали' }
+      ], input);
     }
   });
 

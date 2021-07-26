@@ -51,7 +51,7 @@ export class Client {
   }
 
   private async handleMessage(message = '') {
-    this.logger.log(`REQUEST: ${message}`);
+    this.logger.log(`\nREQUEST: ${message}`);
     const resBody = await this.getResBody(message);
     this.logger.log(`RESPONSE: ${JSON.stringify(resBody)}`);
     this.wsConnection!.send(JSON.stringify(resBody));

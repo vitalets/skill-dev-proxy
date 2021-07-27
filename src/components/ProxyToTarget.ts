@@ -13,17 +13,18 @@ export class ProxyToTarget extends Component {
   }
 
   async reply() {
-    await Timeout.wrap(
+    this.ctx.resBody = await Timeout.wrap(
       this.proxyRequest(),
       ProxyToTarget.TIMEOUT,
       `Таймаут таргета ${targetManager.selectedTarget!.name}`
     );
+    if (!this.ctx.resBody) throw new Error(`Пустой ответ.`);
   }
 
   async proxyRequest() {
     const { name, url } = targetManager.selectedTarget!;
     logger.log(`PROXY TO TARGET: ${name}`);
-    this.ctx.resBody = url === 'websocket'
+    return url === 'websocket'
       ? await proxyWs(this.ctx.reqBody)
       : await proxyHttp(url, this.ctx.reqBody);
   }

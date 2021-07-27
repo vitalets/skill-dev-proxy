@@ -9,18 +9,34 @@ import AbortController from 'abort-controller';
 let ac: AbortController;
 
 export async function proxyWs(reqBody: unknown) {
-  ac?.abort();
-  if (!server.wsConnection) {
-    throw new Error('Нет получателей! Нужно запустить скрипт на локалхосте.');
-  }
-  ac = new AbortController();
-  server.wsConnection.sendUTF(JSON.stringify(reqBody));
+  assertClientConnected();
+  recreateAbortController();
+  sendJsonToClient(reqBody);
   try {
-  const [ response ] = await once(server.wsConnection, 'message', { signal: ac.signal }) as unknown as IMessage[];
-  if (response?.utf8Data) return JSON.parse(response.utf8Data);
+    return await waitJsonFromClient();
   } catch (e) {
     if (e.name !== 'AbortError') throw e;
   }
-  throw new Error('Пустой ответ.');
 }
 
+function recreateAbortController() {
+  ac?.abort();
+  ac = new AbortController();
+}
+
+function assertClientConnected() {
+  if (!server.wsConnection) {
+    throw new Error('Нет получателей! Нужно запустить скрипт на локалхосте.');
+  }
+}
+
+function sendJsonToClient(data: unknown) {
+  server.wsConnection!.sendUTF(JSON.stringify(data));
+}
+
+async function waitJsonFromClient() {
+  const [ response ] = await once(server.wsConnection!, 'message', { signal: ac.signal }) as unknown as IMessage[];
+  if (response?.utf8Data) {
+    return JSON.parse(response.utf8Data);
+  }
+}

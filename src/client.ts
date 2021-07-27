@@ -60,7 +60,9 @@ export class Client {
   private async getResBody(message: string) {
     try {
       const reqBody = JSON.parse(message) as ReqBody;
-      return await this.callHandler(reqBody);
+      const resBody = await this.callHandler(reqBody);
+      if (!resBody) throw new Error(`Empty response from handler.`);
+      return resBody;
     } catch (e) {
       this.logger.error(e);
       // todo: handle sber error response

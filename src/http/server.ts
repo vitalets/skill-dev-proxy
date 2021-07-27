@@ -6,7 +6,7 @@ import { server as WebSocketServer, connection as Connection } from 'websocket';
 import { logger } from '../logger';
 import { setRoutes } from './routes';
 
-class Server {
+export class Server {
   app: Application;
   httpServer: HttpServer;
   wsServer: WebSocketServer;

@@ -45,12 +45,11 @@ describe('ProxyToTarget (ws)', () => {
     assert.include(user.response.text, 'Нет получателей! Нужно запустить скрипт на локалхосте.');
   });
 
-  it('error', async () => {
+  it('error in handler', async () => {
     client.options.handler = () => { throw new Error('foo'); };
     const user = new User();
 
     await user.say('установи таргет локалхост');
-
     const consoleStub = sinon.stub(console, 'error');
     await user.say('привет');
 
@@ -58,9 +57,24 @@ describe('ProxyToTarget (ws)', () => {
     sinon.assert.calledOnceWithMatch(consoleStub, `Error: foo`);
   });
 
+  it('empty response from handler', async () => {
+    client.options.handler = () => { return; };
+    const user = new User();
+
+    await user.say('установи таргет локалхост');
+    const consoleStub = sinon.stub(console, 'error');
+    await user.say('привет');
+
+    assert.include(user.response.text, 'Empty response from handler');
+    sinon.assert.calledOnceWithMatch(consoleStub, `Empty response from handler`);
+  });
+
   it('timeout', async () => {
     sinon.stub(ProxyToTarget, 'TIMEOUT').value(100);
-    client.options.handler = () => Timeout.set(ProxyToTarget.TIMEOUT + 200);
+    client.options.handler = async () => {
+      await Timeout.set(ProxyToTarget.TIMEOUT + 200);
+      return {};
+    };
 
     const user = new User();
 

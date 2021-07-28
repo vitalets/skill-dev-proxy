@@ -20,7 +20,7 @@ async function shutdown(reason: string, exitCode = 0) {
   } catch (e) {
     logger.error(e);
   }
-  process.exit(exitCode);
+  setTimeout(() => process.exit(exitCode), 3000).unref();
 }
 
 function handleRejection(error: Error) {

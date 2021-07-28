@@ -16,7 +16,7 @@ async function shutdown(reason: string, exitCode = 0) {
   } catch (e) {
     logError(e);
   }
-  process.exit(exitCode);
+  setTimeout(() => process.exit(exitCode), 3000).unref();
 }
 
 function handleRejection(e: Error) {

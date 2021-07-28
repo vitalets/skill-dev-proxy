@@ -22,7 +22,7 @@
     "{src,test}/**/*.ts": "eslint --ext .ts"
   },
   "engines": {
-    "node": "14"
+    "node": ">=14"
   },
   "dependencies": {
     "abort-controller": "^3.0.0",

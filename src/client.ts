@@ -6,18 +6,18 @@ import { once } from 'events';
 import { client as WSClient, connection as Connection } from 'websocket';
 import { proxyHttp } from './proxy/http';
 import { Defaults } from './utils';
-import { createLogger, Logger } from './logger';
+import { createLogger, Logger, LogLevelNames } from './logger';
 import { ReqBody } from 'alice-types';
 
 export interface ClientOptions {
   wsUrl: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   handler: string | ((...args: any[]) => any);
-  logging?: boolean;
+  logLevel: LogLevelNames;
 }
 
 const defaults: Defaults<ClientOptions> = {
-  logging: true,
+  logLevel: 'info',
 };
 
 export class Client {
@@ -28,7 +28,7 @@ export class Client {
 
   constructor(options: ClientOptions) {
     this.options = Object.assign({}, defaults, options);
-    this.logger = createLogger({ level: this.options.logging ? 'info' : 'error' });
+    this.logger = createLogger({ level: this.options.logLevel });
     this.ws = new WSClient();
   }
 
@@ -51,9 +51,9 @@ export class Client {
   }
 
   private async handleMessage(message = '') {
-    this.logger.log(`\nREQUEST: ${message}`);
+    this.logger.debug(`\nREQUEST: ${message}`);
     const resBody = await this.getResBody(message);
-    this.logger.log(`RESPONSE: ${JSON.stringify(resBody)}`);
+    this.logger.debug(`RESPONSE: ${JSON.stringify(resBody)}`);
     this.wsConnection!.send(JSON.stringify(resBody));
   }
 

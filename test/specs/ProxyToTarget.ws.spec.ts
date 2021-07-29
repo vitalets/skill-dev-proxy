@@ -18,7 +18,7 @@ describe('ProxyToTarget (ws)', () => {
 
   beforeEach(async () => {
     const wsUrl = User.config.webhookUrl;
-    client = new Client({ wsUrl, handler: skill, logging: false });
+    client = new Client({ wsUrl, handler: skill, logLevel: 'error' });
     await client.run();
   });
 

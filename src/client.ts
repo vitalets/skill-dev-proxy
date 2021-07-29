@@ -13,11 +13,11 @@ export interface ClientOptions {
   wsUrl: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   handler: string | ((...args: any[]) => any);
-  logLevel: LogLevelNames;
+  logLevel?: LogLevelNames;
 }
 
 const defaults: Defaults<ClientOptions> = {
-  logLevel: 'info',
+  logLevel: 'debug',
 };
 
 export class Client {

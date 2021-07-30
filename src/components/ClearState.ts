@@ -1,5 +1,5 @@
+import { reply, buttons } from 'alice-renderer';
 import { Component } from './Component';
-import { reply } from 'alice-renderer';
 
 export class ClearState extends Component {
   match() {
@@ -7,7 +7,25 @@ export class ClearState extends Component {
   }
 
   async reply() {
+    this.clearApplicationState();
+    this.clearUserState();
+    return reply`
+      Стейт очищен.
+      ${buttons([ 'Поехали' ])}
+    `;
+  }
+
+  clearApplicationState() {
     this.ctx.resBody.application_state = {};
-    return reply`Стейт сброшен.`;
+  }
+
+  clearUserState() {
+    const state = this.ctx.reqBody.state?.user;
+    if (state) {
+      this.ctx.resBody.user_state_update = {};
+      Object.keys(state).forEach(key => {
+        this.ctx.resBody.user_state_update![key] = null;
+      });
+    }
   }
 }

@@ -1,7 +1,7 @@
 {
   "name": "skill-dev-proxy",
   "description": "Proxy skill for testing other skills",
-  "version": "2.0.8",
+  "version": "2.0.9",
   "main": "dist/index.js",
   "files": [
     "dist",

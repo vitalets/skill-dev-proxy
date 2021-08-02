@@ -2,6 +2,7 @@ import { promisify } from 'util';
 import { createServer, Server as HttpServer } from 'http';
 import { AddressInfo } from 'net';
 import express, { Application } from 'express';
+import cors from 'cors';
 import { server as WebSocketServer, connection as Connection } from 'websocket';
 import { logger } from '../logger';
 import { setRoutes } from './routes';
@@ -32,6 +33,7 @@ export class Server {
 
   private createApp() {
     const app = express();
+    app.use(cors());
     app.use(express.json());
     return app;
   }

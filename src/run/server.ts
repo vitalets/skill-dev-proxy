@@ -1,7 +1,7 @@
 import { server } from '../http/server';
 import { targetManager } from '../target-manager';
 import { logger } from '../logger';
-import { port, targets } from '../env';
+import { config } from '../config';
 
 run();
 
@@ -9,8 +9,8 @@ async function run() {
   process.on('SIGINT', () => shutdown('SIGINT'));
   process.on('SIGTERM', () => shutdown('SIGTERM'));
   process.on('unhandledRejection', handleRejection);
-  targetManager.init(targets);
-  await server.start(port);
+  targetManager.init(config.targets);
+  await server.start(config.port);
 }
 
 async function shutdown(reason: string, exitCode = 0) {

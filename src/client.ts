@@ -7,7 +7,6 @@ import { client as WSClient, connection as Connection } from 'websocket';
 import { proxyHttp } from './proxy/http';
 import { Defaults } from './utils';
 import { createLogger, Logger, LogLevelNames } from './logger';
-import { ReqBody } from 'alice-types';
 
 export interface ClientOptions {
   wsUrl: string;
@@ -59,14 +58,13 @@ export class Client {
 
   private async getResBody(message: string) {
     try {
-      const reqBody = JSON.parse(message) as ReqBody;
+      const reqBody = JSON.parse(message);
       const resBody = await this.callHandler(reqBody);
       if (!resBody) throw new Error(`Empty response from handler.`);
       return resBody;
     } catch (e) {
       this.logger.error(e);
-      // todo: handle sber error response
-      return buildAliceErrorResponse(e);
+      return buildErrorResponse(e);
     }
   }
 
@@ -78,13 +76,7 @@ export class Client {
   }
 }
 
-function buildAliceErrorResponse(e: Error) {
-  const message = (e.stack || e.message).split('\n').slice(0, 2).join('\n');
-  return {
-    response: {
-      text: message,
-      tts: 'Ошибка',
-    },
-    version: '1.0',
-  };
+function buildErrorResponse(e: Error) {
+  const error = (e.stack || e.message).split('\n').slice(0, 2).join('\n');
+  return { error };
 }

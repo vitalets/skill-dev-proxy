@@ -19,6 +19,7 @@ export class ProxyToTarget extends Component {
       `Таймаут таргета ${targetManager.selectedTarget!.name}`
     );
     if (!resBody) throw new Error(`Пустой ответ.`);
+    if (resBody.error) throw new Error(resBody.error);
     this.ctx.response.body = resBody;
   }
 

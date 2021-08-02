@@ -25,13 +25,13 @@ export async function handleUserMessage(reqBody: unknown) {
 }
 
 async function buildResBody(reqBody: unknown) {
+  const ctx = new Ctx(reqBody);
   try {
-    const ctx = new Ctx(reqBody);
     await runComponents(ctx);
-    return ctx.response.body;
   } catch (e) {
-    return errorHandler(e);
+    errorHandler(ctx, e);
   }
+  return ctx.response.body;
 }
 
 // todo: user bot-components? (botz)

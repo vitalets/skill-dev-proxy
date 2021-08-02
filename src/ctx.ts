@@ -1,22 +1,14 @@
-import { ReqBody, ResBody } from 'alice-types';
+import { Request, Response, createRequest, createResponse } from './protocol';
 import { normalizeUserMessage } from './utils';
 
 export class Ctx {
-  resBody: ResBody = {
-    response: { text: '', end_session: false },
-    version: '1.0',
-  };
+  request: Request;
+  response: Response;
   userMessage: string;
 
-  constructor(public reqBody: ReqBody) {
-    this.userMessage = normalizeUserMessage(this.request.command);
-  }
-
-  get request() {
-    return this.reqBody.request;
-  }
-
-  get session() {
-    return this.reqBody.session;
+  constructor(reqBody: unknown) {
+    this.request = createRequest(reqBody);
+    this.response = createResponse(this.request);
+    this.userMessage = normalizeUserMessage(this.request.userMessage);
   }
 }

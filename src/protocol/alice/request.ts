@@ -1,0 +1,43 @@
+/**
+ * Alice request.
+ */
+import { ReqBody } from 'alice-types';
+import { BaseRequest, IRequest } from '../base/request';
+
+export class AliceRequest extends BaseRequest implements IRequest {
+  static match(reqBody: unknown): reqBody is ReqBody {
+    return Boolean((reqBody as ReqBody)?.request);
+  }
+
+  isAlice(): this is AliceRequest {
+    return true;
+  }
+
+  constructor(public body: ReqBody) {
+    super();
+  }
+
+  get userId() {
+    return this.body.session.application.application_id;
+  }
+
+  get userMessage() {
+    return this.body.request.command || '';
+  }
+
+  get isNewSession() {
+    return this.body.session.new;
+  }
+
+  get userState() {
+    return this.body.state?.user;
+  }
+
+  get applicationState() {
+    return this.body.state?.application;
+  }
+
+  get sessionState() {
+    return this.body.state?.session;
+  }
+}

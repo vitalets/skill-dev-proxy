@@ -1,4 +1,3 @@
-import { ReqBody, ResBody } from 'alice-types';
 import { logger } from './logger';
 import { Ctx } from './ctx';
 import { errorHandler } from './error-handler';
@@ -18,18 +17,18 @@ const Components = [
   ShowTargets, // <- default component
 ];
 
-export async function handleUserMessage(reqBody: ReqBody) {
+export async function handleUserMessage(reqBody: unknown) {
   logger.log(`REQUEST: ${JSON.stringify(reqBody)}`);
   const resBody = await buildResBody(reqBody);
   logger.log(`RESPONSE: ${JSON.stringify(resBody)}`);
   return resBody;
 }
 
-async function buildResBody(reqBody: ReqBody) {
+async function buildResBody(reqBody: unknown) {
   try {
     const ctx = new Ctx(reqBody);
     await runComponents(ctx);
-    return ctx.resBody;
+    return ctx.response.body;
   } catch (e) {
     return errorHandler(e);
   }
@@ -51,9 +50,9 @@ async function runComponents(ctx: Ctx) {
 async function runComponent(C: typeof Component, ctx: Ctx, { force = false } = {}) {
   const component = new C(ctx);
   if (force || component.match()) {
-    const response = await component.reply() as unknown as ResBody['response'];
+    const response = await component.reply() as unknown;
     if (response) {
-      ctx.resBody.response = response;
+      ctx.response.data = response as typeof ctx.response.data;
     }
     return true;
   }

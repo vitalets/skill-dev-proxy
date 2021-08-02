@@ -16,15 +16,17 @@ export class ClearState extends Component {
   }
 
   clearApplicationState() {
-    this.ctx.resBody.application_state = {};
+    if (this.ctx.response.isAlice()) {
+      this.ctx.response.applicationState = {};
+    }
   }
 
   clearUserState() {
-    const state = this.ctx.reqBody.state?.user;
+    const state = this.ctx.request.userState;
     if (state) {
-      this.ctx.resBody.user_state_update = {};
+      this.ctx.response.userState = {};
       Object.keys(state).forEach(key => {
-        this.ctx.resBody.user_state_update![key] = null;
+        this.ctx.response.userState![key] = null;
       });
     }
   }

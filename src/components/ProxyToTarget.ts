@@ -13,19 +13,20 @@ export class ProxyToTarget extends Component {
   }
 
   async reply() {
-    this.ctx.resBody = await Timeout.wrap(
+    const resBody = await Timeout.wrap(
       this.proxyRequest(),
       ProxyToTarget.TIMEOUT,
       `Таймаут таргета ${targetManager.selectedTarget!.name}`
     );
-    if (!this.ctx.resBody) throw new Error(`Пустой ответ.`);
+    if (!resBody) throw new Error(`Пустой ответ.`);
+    this.ctx.response.body = resBody;
   }
 
   async proxyRequest() {
     const { name, url } = targetManager.selectedTarget!;
     logger.log(`PROXY TO TARGET: ${name}`);
     return url === 'websocket'
-      ? await proxyWs(this.ctx.reqBody)
-      : await proxyHttp(url, this.ctx.reqBody);
+      ? await proxyWs(this.ctx.request.body)
+      : await proxyHttp(url, this.ctx.request.body);
   }
 }

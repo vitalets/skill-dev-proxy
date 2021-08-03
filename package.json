@@ -35,6 +35,7 @@
     "express": "^4.17.1",
     "express-async-handler": "^1.1.4",
     "node-fetch": "^2.6.1",
+    "uni-skill": "^1.0.3",
     "websocket": "^1.0.34"
   },
   "devDependencies": {
@@ -50,7 +51,7 @@
     "@typescript-eslint/eslint-plugin": "^4.22.0",
     "@typescript-eslint/parser": "^4.22.0",
     "alice-tester": "^2.1.1",
-    "alice-types": "^1.1.0",
+    "alice-types": "^1.2.1",
     "chai": "^4.3.4",
     "eslint": "^7.24.0",
     "eslint-plugin-mocha": "^8.1.0",

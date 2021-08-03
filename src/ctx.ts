@@ -1,9 +1,9 @@
-import { Request, Response, createRequest, createResponse } from './protocol';
+import { createRequest, createResponse } from 'uni-skill';
 import { normalizeUserMessage } from './utils';
 
 export class Ctx {
-  request: Request;
-  response: Response;
+  request: ReturnType<typeof createRequest>;
+  response: ReturnType<typeof createResponse>;
   userMessage: string;
 
   constructor(reqBody: unknown) {

@@ -1,3 +1,5 @@
+import { ResBody as AliceResBody } from 'alice-types';
+import { Response } from 'uni-skill';
 import { logger } from './logger';
 import { Ctx } from './ctx';
 import { errorHandler } from './error-handler';
@@ -29,7 +31,8 @@ async function buildResBody(reqBody: unknown) {
   try {
     await runComponents(ctx);
   } catch (e) {
-    errorHandler(ctx, e);
+    const response = errorHandler(e) as AliceResBody['response'];
+    convertAliceResponseToUniversal(response, ctx.response);
   }
   return ctx.response.body;
 }
@@ -50,10 +53,27 @@ async function runComponents(ctx: Ctx) {
 async function runComponent(C: typeof Component, ctx: Ctx, { force = false } = {}) {
   const component = new C(ctx);
   if (force || component.match()) {
-    const response = await component.reply() as unknown;
+    const response = await component.reply() as unknown as AliceResBody['response'];
     if (response) {
-      ctx.response.data = response as typeof ctx.response.data;
+      convertAliceResponseToUniversal(response, ctx.response);
     }
     return true;
+  }
+}
+
+/**
+ * Так как alice-renderer в компонентах выдает ответ только под Алису,
+ * то здесь конвертим его в универсальный ответ под любую платформу.
+ */
+function convertAliceResponseToUniversal(aliceResponse: AliceResBody['response'], response: Response) {
+  if (response.isAlice()) {
+    response.body.response = aliceResponse;
+    return;
+  }
+  response.text = aliceResponse.text;
+  if (aliceResponse.tts) response.tts = aliceResponse.tts;
+  if (aliceResponse.buttons) {
+    const buttons = aliceResponse.buttons.map(button => button.title);
+    response.addButtons(buttons);
   }
 }

@@ -7,12 +7,13 @@ export class ClearState extends Component {
   }
 
   async reply() {
-    this.clearApplicationState();
-    this.clearUserState();
-    return reply`
-      Стейт очищен.
-      ${buttons([ 'Поехали' ])}
-    `;
+    if (this.ctx.response.isSber()) {
+      return this.replyNotSupported();
+    } else {
+      this.clearApplicationState();
+      this.clearUserState();
+      return this.replyStateCleared();
+    }
   }
 
   clearApplicationState() {
@@ -22,12 +23,26 @@ export class ClearState extends Component {
   }
 
   clearUserState() {
+    if (this.ctx.request.isSber() || this.ctx.response.isSber()) return;
     const state = this.ctx.request.userState;
     if (state) {
       this.ctx.response.userState = {};
-      Object.keys(state).forEach(key => {
+      for (const key of Object.keys(state)) {
         this.ctx.response.userState![key] = null;
-      });
+      }
     }
+  }
+
+  replyStateCleared() {
+    return reply`
+      Стейт очищен.
+      ${buttons([ 'Поехали' ])}
+    `;
+  }
+
+  replyNotSupported() {
+    return reply`
+      На данной платформе стейта нет.
+    `;
   }
 }

@@ -1,5 +1,5 @@
-import { ReqBody } from 'alice-types';
 import Timeout from 'await-timeout';
+import { createRequest, createResponse } from 'uni-skill';
 import { Client } from '../../src/client';
 import { ProxyToTarget } from '../../src/components/ProxyToTarget';
 
@@ -7,13 +7,11 @@ describe('ProxyToTarget (ws)', () => {
 
   let client: Client;
 
-  const skill = (reqBody: ReqBody) => {
-    return {
-      response: {
-        text: `Вы сказали: ${reqBody.request.command}`,
-      },
-      version: '1.0'
-    };
+  const skill = (reqBody: unknown) => {
+    const req = createRequest(reqBody);
+    const res = createResponse(req);
+    res.text = `Вы сказали: ${req.userMessage}`;
+    return res.body;
   };
 
   beforeEach(async () => {

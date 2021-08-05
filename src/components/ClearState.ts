@@ -1,7 +1,7 @@
 import { reply, buttons } from 'alice-renderer';
 import { Component } from './Component';
 
-const regexp = /(сбрось|сбросить|очисти(ть)?) (стейт|стейк|state)/;
+const regexp = /(сбрось|сбросить|очисти(ть)?) (стейт|стейк|стоит|state)/;
 
 export class ClearState extends Component {
   match() {

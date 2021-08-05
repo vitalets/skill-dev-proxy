@@ -3,7 +3,7 @@ import { Component } from './Component';
 
 export class ClearState extends Component {
   match() {
-    return /(сбрось|сбросить|очистить) (стейт|стейк)/.test(this.ctx.userMessage);
+    return /(сбрось|сбросить|очистить) (стейт|стейк|state)/.test(this.ctx.userMessage);
   }
 
   async reply() {

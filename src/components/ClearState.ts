@@ -1,9 +1,11 @@
 import { reply, buttons } from 'alice-renderer';
 import { Component } from './Component';
 
+const regexp = /(сбрось|сбросить|очисти(ть)?) (стейт|стейк|state)/;
+
 export class ClearState extends Component {
   match() {
-    return /(сбрось|сбросить|очистить) (стейт|стейк|state)/.test(this.ctx.userMessage);
+    return regexp.test(this.ctx.userMessage);
   }
 
   async reply() {

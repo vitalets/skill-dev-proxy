@@ -4,7 +4,7 @@ import { Component } from './Component';
 
 export class ShowTargets extends Component {
   match() {
-    return /(список|покажи) (таргетов|таргеты)/.test(this.ctx.userMessage);
+    return /(список|покажи) (т[ао]ргетов|т[ао]ргеты)/.test(this.ctx.userMessage);
   }
 
   async reply() {

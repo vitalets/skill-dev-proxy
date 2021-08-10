@@ -33,7 +33,7 @@ describe('ProxyToTarget (http)', () => {
     await user.say('привет');
 
     scope.done();
-    assert.include(user.response.text, '500 Internal Server Error something broken');
+    assert.include(user.response.text, '(target: Навык 1) Error: 500 Internal Server Error something broken');
     assert.include(user.response.tts, 'Ошибка');
     assert.deepEqual(user.response.buttons, [
       { title: 'Повторить', hide: true },

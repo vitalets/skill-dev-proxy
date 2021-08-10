@@ -37,7 +37,7 @@ export class Client {
     this.wsConnection = (await once(this.ws, 'connect'))[0] as Connection;
     this.logger.log('Connected.');
     this.wsConnection.on('error', e => this.logger.error(e));
-    this.wsConnection.on('message', message => this.handleMessage(message.utf8Data));
+    this.wsConnection.on('message', message => message.type === 'utf8' && this.handleMessage(message.utf8Data));
     // todo: connectFailed
   }
 

@@ -2,7 +2,7 @@
  * Proxy to websocket.
  */
 import { once } from 'events';
-import { IMessage } from 'websocket';
+import { IUtf8Message } from 'websocket';
 import { server } from '../http/server';
 import AbortController from 'abort-controller';
 
@@ -35,7 +35,7 @@ function sendJsonToClient(data: unknown) {
 }
 
 async function waitJsonFromClient() {
-  const [ response ] = await once(server.wsConnection!, 'message', { signal: ac.signal }) as unknown as IMessage[];
+  const [ response ] = await once(server.wsConnection!, 'message', { signal: ac.signal }) as unknown as IUtf8Message[];
   if (response?.utf8Data) {
     return JSON.parse(response.utf8Data);
   }

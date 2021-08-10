@@ -70,10 +70,10 @@ function convertAliceResponseToUniversal(aliceResponse: AliceResBody['response']
     response.body.response = aliceResponse;
     return;
   }
-  response.text = aliceResponse.text;
-  if (aliceResponse.tts) response.tts = aliceResponse.tts;
+  response.addText(aliceResponse.text);
+  if (aliceResponse.tts) response.addTts(aliceResponse.tts);
   if (aliceResponse.buttons) {
     const buttons = aliceResponse.buttons.map(button => button.title);
-    response.addButtons(buttons);
+    response.addSuggest(buttons);
   }
 }

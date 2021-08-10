@@ -10,7 +10,8 @@ describe('ProxyToTarget (ws)', () => {
   const skill = (reqBody: unknown) => {
     const req = createRequest(reqBody);
     const res = createResponse(req);
-    res.text = `Вы сказали: ${req.userMessage}`;
+    res.addText(`Вы сказали: ${req.userMessage}`);
+    res.addTts(`Вы сказали: ${req.userMessage}`);
     return res.body;
   };
 

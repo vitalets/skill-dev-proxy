@@ -8,7 +8,7 @@ export function errorHandler(e: Error) {
   return reply`
     ${tts(ttsMessage)}
     ${text(textMessage)}
-    ${buttons([ 'Список таргетов' ])}
+    ${buttons([ 'Повторить', 'Список таргетов' ])}
   `;
 }
 

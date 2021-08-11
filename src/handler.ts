@@ -8,13 +8,11 @@ import { PingPong } from './components/PingPong';
 import { SetTarget } from './components/SetTarget';
 import { ShowTargets } from './components/ShowTargets';
 import { ProxyToTarget } from './components/ProxyToTarget';
-import { ClearState } from './components/ClearState';
 
 const Components = [
   PingPong,
   SetTarget,
   ShowTargets,
-  ClearState,
   ProxyToTarget,
   ShowTargets, // <- default component
 ];

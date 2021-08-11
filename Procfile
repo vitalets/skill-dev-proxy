@@ -1,1 +1,1 @@
-web: node dist/run/server.js
+web: node dist/server/run.js

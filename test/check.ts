@@ -5,4 +5,4 @@ import targets from './targets.json';
 import { config } from '../src/config';
 
 config.targets = JSON.stringify(targets);
-import('../src/run/server');
+import('../src/server/run');

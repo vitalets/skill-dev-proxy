@@ -4,9 +4,9 @@
  */
 import { once } from 'events';
 import { client as WSClient, connection as Connection } from 'websocket';
-import { proxyHttp } from './proxy/http';
-import { Defaults } from './utils';
-import { createLogger, Logger, LogLevelNames } from './logger';
+import { proxyHttp } from '../proxy/http';
+import { Defaults } from '../utils';
+import { createLogger, Logger, LogLevelNames } from '../logger';
 
 export interface ClientOptions {
   wsUrl: string;

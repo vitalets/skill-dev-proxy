@@ -7,7 +7,7 @@ import nock from 'nock';
 import sinon from 'sinon';
 import getPort from 'get-port';
 import User from 'alice-tester';
-import { server } from '../src/server';
+import { server } from '../src/server/server';
 import { targetManager } from '../src/target-manager';
 
 type AssertType = typeof chai.assert;

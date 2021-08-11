@@ -1,4 +1,4 @@
-import { server } from '.';
+import { server } from './server';
 import { targetManager } from '../target-manager';
 import { logger } from '../logger';
 import { config } from '../config';

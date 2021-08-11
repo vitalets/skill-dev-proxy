@@ -1,6 +1,6 @@
 import Timeout from 'await-timeout';
 import { createRequest, createResponse } from 'uni-skill';
-import { Client } from '../../src/client';
+import { Client } from '../../src/client/client';
 import { ProxyToTarget } from '../../src/components/ProxyToTarget';
 
 describe('ProxyToTarget (ws)', () => {

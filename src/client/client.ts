@@ -27,6 +27,7 @@ export class Client {
 
   constructor(options: ClientOptions) {
     this.options = Object.assign({}, defaults, options);
+    this.assertOptions();
     this.logger = createLogger({ level: this.options.logLevel });
     this.ws = new WSClient();
   }
@@ -73,6 +74,11 @@ export class Client {
     return typeof handler === 'function'
       ? handler(reqBody)
       : proxyHttp(handler, reqBody);
+  }
+
+  private assertOptions() {
+    if (!this.options.wsUrl) throw new Error(`Empty wsUrl`);
+    if (!this.options.handler) throw new Error(`Empty handler`);
   }
 }
 

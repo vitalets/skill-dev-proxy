@@ -37,7 +37,7 @@
     "express": "^4.17.1",
     "express-async-handler": "^1.1.4",
     "node-fetch": "^2.6.1",
-    "uni-skill": "^1.1.0",
+    "uni-skill": "^1.2.3",
     "websocket": "^1.0.34"
   },
   "devDependencies": {

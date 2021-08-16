@@ -64,7 +64,7 @@ async function runComponent(C: typeof Component, ctx: Ctx, { force = false } = {
  * то здесь конвертим его в универсальный ответ под любую платформу.
  */
 function convertAliceResponseToUniversal(aliceResponse: AliceResBody['response'], response: Response) {
-  response.bubbles.push(aliceResponse.text);
-  response.tts = aliceResponse.tts || '';
-  response.suggest = (aliceResponse.buttons || []).map(button => button.title);
+  response.addBubble(aliceResponse.text);
+  response.addVoice(aliceResponse.tts);
+  response.addSuggest((aliceResponse.buttons || []).map(button => button.title));
 }

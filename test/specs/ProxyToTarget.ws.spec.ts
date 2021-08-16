@@ -10,8 +10,7 @@ describe('ProxyToTarget (ws)', () => {
   const skill = (reqBody: unknown) => {
     const req = createRequest(reqBody);
     const res = createResponse(req);
-    res.bubbles.push(`Вы сказали: ${req.userMessage}`);
-    res.tts = `Вы сказали: ${req.userMessage}`;
+    res.addVoiceBubble(`Вы сказали: ${req.userMessage}`);
     return res.body;
   };
 

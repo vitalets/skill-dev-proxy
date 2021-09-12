@@ -1,5 +1,4 @@
-import { ResBody as AliceResBody } from 'alice-types';
-import { Response } from 'uni-skill';
+import { Response, AliceResponse } from 'uni-skill';
 import { logger } from './logger';
 import { Ctx } from './ctx';
 import { errorHandler } from './error-handler';
@@ -9,6 +8,8 @@ import { SetTarget } from './components/SetTarget';
 import { ShowTargets } from './components/ShowTargets';
 import { ProxyToTarget } from './components/ProxyToTarget';
 
+type AliceResBody = AliceResponse['body'];
+
 const Components = [
   PingPong,
   SetTarget,
@@ -17,7 +18,7 @@ const Components = [
   ShowTargets, // <- default component
 ];
 
-export async function handleUserMessage(reqBody: unknown) {
+export async function handleUserMessage(reqBody: unknown): Promise<Response['body']> {
   logger.log(`REQUEST: ${JSON.stringify(reqBody)}`);
   const resBody = await buildResBody(reqBody);
   logger.log(`RESPONSE: ${JSON.stringify(resBody)}`);
@@ -64,7 +65,7 @@ async function runComponent(C: typeof Component, ctx: Ctx, { force = false } = {
  * то здесь конвертим его в универсальный ответ под любую платформу.
  */
 function convertAliceResponseToUniversal(aliceResponse: AliceResBody['response'], response: Response) {
-  response.addBubble(aliceResponse.text);
-  response.addVoice(aliceResponse.tts);
+  response.addText(aliceResponse.text);
+  response.addVoice(aliceResponse.tts || '');
   response.addSuggest((aliceResponse.buttons || []).map(button => button.title));
 }

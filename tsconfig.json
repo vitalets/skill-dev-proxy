@@ -6,6 +6,7 @@
     "declaration": true,
     "strict": true,
     "resolveJsonModule": true,
+    "useUnknownInCatchVariables": false,
     "forceConsistentCasingInFileNames": true,
     "moduleResolution": "node",
     "esModuleInterop": true

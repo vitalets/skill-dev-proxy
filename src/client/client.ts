@@ -39,6 +39,7 @@ export class Client {
     this.logger.log('Connected.');
     this.wsConnection.on('error', e => this.logger.error(e));
     this.wsConnection.on('message', message => message.type === 'utf8' && this.handleMessage(message.utf8Data));
+    this.wsConnection.on('close', () => this.logger.log('Disconnected.'));
     // todo: connectFailed
   }
 

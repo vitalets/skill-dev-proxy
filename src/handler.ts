@@ -27,6 +27,7 @@ export async function handleUserMessage(reqBody: unknown): Promise<Response['bod
 
 async function buildResBody(reqBody: unknown) {
   const ctx = new Ctx(reqBody);
+  logger.log(`PLATFORM: ${getPlatform(ctx)}`);
   try {
     await runComponents(ctx);
   } catch (e) {
@@ -68,4 +69,13 @@ function convertAliceResponseToUniversal(aliceResponse: AliceResBody['response']
   response.addText(aliceResponse.text);
   response.addVoice(aliceResponse.tts || '');
   response.addSuggest((aliceResponse.buttons || []).map(button => button.title));
+}
+
+function getPlatform(ctx: Ctx) {
+  switch (true) {
+    case ctx.request.isAlice(): return 'alice';
+    case ctx.request.isSber(): return 'sber';
+    case ctx.request.isMarusya(): return 'marusya';
+    default: return 'uknown';
+  }
 }

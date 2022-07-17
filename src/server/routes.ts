@@ -2,9 +2,12 @@ import { Application, RequestHandler } from 'express';
 import asyncHandler from 'express-async-handler';
 import { targetManager } from '../target-manager';
 import { handleUserMessage } from '../handler';
+import { sendOauthToken, showOauthForm } from '../oauth/handler';
 
 export function setRoutes(app: Application) {
+  app.get('/oauth', showOauthForm);
   app.get('*', showTargets);
+  app.post('/oauth/token', sendOauthToken);
   app.post('*', skillHandler);
 }
 
@@ -17,4 +20,3 @@ const skillHandler: RequestHandler = asyncHandler(async (req, res) => {
   const resBody = await handleUserMessage(req.body);
   res.json(resBody);
 });
-

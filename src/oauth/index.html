@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Fake OAuth</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+  <form id="loginform">
+    <div>
+      <label>Username: <input type="text" name="username" required></label>
+    </div>
+    <div>
+      <label>Password: <input type="password" name="password" required></label>
+    </div>
+    <div>
+      <button type="submit">Login</button>
+    </div>
+  </form>
+  <pre id="info">URL params:</pre>
+  <script>
+    const urlObj = new URL(location.href);
+    const infoEl = document.querySelector('#info');
+    for (const [ key, value ] of urlObj.searchParams.entries()) {
+      infoEl.textContent += `\n${key}: ${value}`;
+    }
+
+    document.querySelector('#loginform').onsubmit = e => {
+      e.preventDefault();
+      const redirectUri = new URL(urlObj.searchParams.get('redirect_uri'));
+      redirectUri.searchParams.set('code', 'skill-dev-proxy-oauth-code');
+      redirectUri.searchParams.set('client_id', urlObj.searchParams.get('client_id'));
+      redirectUri.searchParams.set('state', urlObj.searchParams.get('state'));
+      redirectUri.searchParams.set('scope', urlObj.searchParams.get('scope') || '');
+      infoEl.textContent += `\n\nRedirecting to: ${redirectUri}`;
+      setTimeout(() => location.href = redirectUri.toString(), 3000);
+    };
+  </script>
+</body>
+
+</html>

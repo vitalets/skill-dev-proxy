@@ -2,12 +2,13 @@ import { Application, RequestHandler } from 'express';
 import asyncHandler from 'express-async-handler';
 import { targetManager } from '../target-manager';
 import { handleUserMessage } from '../handler';
-import { sendOauthToken, showOauthForm } from '../oauth/handler';
+import { router as oauthRouter } from '../oauth/router';
+import { router as smarthomeRouter } from '../smarthome/router';
 
 export function setRoutes(app: Application) {
-  app.get('/oauth', showOauthForm);
+  app.use('/oauth', oauthRouter);
+  app.use('/v1.0', smarthomeRouter);
   app.get('*', showTargets);
-  app.post('/oauth/token', sendOauthToken);
   app.post('*', skillHandler);
 }
 

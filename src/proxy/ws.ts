@@ -4,14 +4,17 @@
 import { once } from 'events';
 import { IUtf8Message } from 'websocket';
 import { server } from '../server/server';
+import { RequestInit } from 'node-fetch';
 // import AbortController from 'abort-controller';
 
 let ac: AbortController;
 
-export async function proxyWs(reqBody: unknown) {
+// todo: преобразовывать весь запрос в json { method, headers, body }
+export async function proxyWs({ body }: RequestInit) {
+  if (typeof body !== 'string') throw new Error(`Can't proxy this body to ws`);
   assertClientConnected();
   recreateAbortController();
-  sendJsonToClient(reqBody);
+  sendMessageToClient(body);
   try {
     return await waitJsonFromClient();
   } catch (e) {
@@ -30,8 +33,8 @@ function assertClientConnected() {
   }
 }
 
-function sendJsonToClient(data: unknown) {
-  server.wsConnection!.sendUTF(JSON.stringify(data));
+function sendMessageToClient(data: string) {
+  server.wsConnection!.sendUTF(data);
 }
 
 async function waitJsonFromClient() {

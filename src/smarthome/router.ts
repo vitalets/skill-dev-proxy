@@ -2,73 +2,59 @@
  * See: https://yandex.ru/dev/dialogs/smart-home/doc/reference/resources.html
  */
 import express from 'express';
+import asyncHandler from 'express-async-handler';
+import { IncomingHttpHeaders } from 'http';
 import { logger } from '../logger';
+import { proxyRequest } from '../proxy';
+import { isLocalhostTarget, targetManager } from '../target-manager';
 
 export const router = express.Router();
 
-router.head('/', (req, res) => {
-  res.send();
-});
-
-// https://yandex.ru/dev/dialogs/smart-home/doc/reference/get-devices.html
-router.get('/user/devices', (req, res) => {
-  logger.log(`getDevices request: ${JSON.stringify(req.body)}`);
+const proxySmarthomeReq = asyncHandler(async (req, res) => {
+  logger.log(`${req.method} ${req.url}: ${JSON.stringify(req.body)}`);
   logger.log(`Authorization: ${req.get('Authorization')}`);
-  const resObj = {
-    request_id: req.get('X-Request-Id'),
-    payload: {
-      user_id: 'xxx',
-      devices: [
-        {
-          id: 'device_1',
-          name: 'Имя устройства',
-          description: 'Описание устройства',
-          type: 'devices.types.light',
-          capabilities: [
-            {
-              type: 'devices.capabilities.on_off',
-              retrievable: true,
-              reportable: false,
-            }
-          ],
-          device_info: {
-            manufacturer: 'Manufacturer 1',
-            model: 'Model 1',
-          }
-        }
-      ]
-    }
-
-  };
-  res.json(resObj);
+  let resBody: Record<string, unknown>;
+  try {
+    selectLocalhostTarget();
+    resBody = await proxyRequest({
+      method: req.method,
+      headers: convertToFetchHeaders(req.headers),
+      body: JSON.stringify(req.body),
+    });
+  } catch (e) {
+    resBody = buildErrorBody(e);
+  }
+  res.json(resBody);
 });
 
-router.post('/user/devices/query', (req, res) => {
-  logger.log(`queryDevices request: ${JSON.stringify(req.body)}`);
-  // const resObj = {
-  //   request_id: req.get('X-Request-Id'),
-  //   payload: {
-  //     devices: [],
-  //   }
-  // };
-  const resObj = {
+router.head('/', (_, res) => res.send());
+router.get('/user/devices', proxySmarthomeReq);
+router.post('/user/devices/query', proxySmarthomeReq);
+router.post('/user/devices/action', proxySmarthomeReq);
+
+function buildErrorBody(e: Error) {
+  return {
     error_code: 'INTERNAL_ERROR',
-    error_message: 'Описание ошибки',
+    error_message: e.stack || e.message,
   };
-  res.json(resObj);
-});
+}
 
-router.post('/user/devices/action', (req, res) => {
-  logger.log(`queryDevices request: ${JSON.stringify(req.body)}`);
-  // const resObj = {
-  //   request_id: req.get('X-Request-Id'),
-  //   payload: {
-  //     devices: [],
-  //   }
-  // };
-  const resObj = {
-    error_code: 'INTERNAL_ERROR',
-    error_message: 'Описание ошибки',
-  };
-  res.json(resObj);
-});
+function convertToFetchHeaders(reqHeaders: IncomingHttpHeaders) {
+  const res: HeadersInit = {};
+  Object.keys(reqHeaders).forEach(key => {
+    const val = reqHeaders[key];
+    if (typeof val === 'string') res[key] = val;
+  });
+  return res;
+}
+
+// function convertToJsonRpc() {
+//   // todo
+// }
+
+// пока всегда выбираем localhost при запросах умного дома
+function selectLocalhostTarget() {
+  if (!isLocalhostTarget(targetManager.selectedTarget)) {
+    targetManager.selectedTarget = targetManager.targets.find(target => isLocalhostTarget(target)) || null;
+  }
+}

@@ -36,3 +36,4 @@ class TargetManager {
 }
 
 export const targetManager = new TargetManager();
+export const isLocalhostTarget = (target?: Target | null) => target?.url === 'websocket';

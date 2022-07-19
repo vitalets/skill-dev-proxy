@@ -1,8 +1,5 @@
-import Timeout from 'await-timeout';
 import { targetManager } from '../target-manager';
-import { logger } from '../logger';
-import { proxyWs } from '../proxy/ws';
-import { proxyHttp } from '../proxy/http';
+import { proxyRequest } from '../proxy';
 import { Component } from './Component';
 
 export class ProxyToTarget extends Component {
@@ -13,21 +10,13 @@ export class ProxyToTarget extends Component {
   }
 
   async reply() {
-    const resBody = await Timeout.wrap(
-      this.proxyRequest(),
-      ProxyToTarget.TIMEOUT,
-      `Таймаут таргета ${targetManager.selectedTarget!.name}`
-    );
-    if (!resBody) throw new Error(`Пустой ответ.`);
-    if (resBody.error) throw new Error(resBody.error);
-    this.ctx.response.body = resBody;
-  }
-
-  async proxyRequest() {
-    const { name, url } = targetManager.selectedTarget!;
-    logger.log(`PROXY TO TARGET: ${name}`);
-    return url === 'websocket'
-      ? await proxyWs(this.ctx.request.body)
-      : await proxyHttp(url, this.ctx.request.body);
+    this.ctx.response.body = await proxyRequest({
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(this.ctx.request.body),
+    }, { timeout: ProxyToTarget.TIMEOUT });
   }
 }

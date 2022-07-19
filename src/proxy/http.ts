@@ -1,21 +1,15 @@
 /**
  * Proxy to http url.
  */
-import fetch, { Response } from 'node-fetch';
+import fetch, { Response, RequestInit } from 'node-fetch';
 
-const headers = {
-  'Accept': 'application/json',
-  'Content-Type': 'application/json',
-};
-const method = 'POST';
-
-export async function proxyHttp(url: string, reqBody: unknown) {
-  const body = JSON.stringify(reqBody);
+export async function proxyHttp(url: string, { method, headers, body }: RequestInit) {
   const response = await fetch(url, { method, headers, body });
   if (!response.ok) {
     const message = await buildErrorMessage(response);
     throw new Error(message);
   }
+  // todo: always json?
   return response.json();
 }
 

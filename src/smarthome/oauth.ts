@@ -5,7 +5,7 @@ import { logger } from '../logger';
 export const router = express.Router();
 
 router.get('/', (req, res) => {
-  const filePath = path.resolve(__dirname, './index.html');
+  const filePath = path.resolve(__dirname, './oauth.html');
   res.sendFile(filePath);
 });
 

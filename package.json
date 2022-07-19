@@ -13,7 +13,7 @@
     "test:l": "mocha -r ts-node/register test/setup.ts test/specs/*.ts",
     "test": "LOG_LEVEL=fatal npm run test:l",
     "check": "tsnd --respawn test/check",
-    "build": "rm -rf dist && tsc -p tsconfig.build.json && cp src/oauth/index.html dist/oauth/",
+    "build": "rm -rf dist && tsc -p tsconfig.build.json && cp src/smarthome/oauth.html dist/smarthome/",
     "deploy:heroku": "git push heroku",
     "logs": "heroku logs --tail",
     "release": "npm run lint && npm t && npm run build && np --yolo --no-release-draft"

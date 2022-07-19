@@ -60,6 +60,7 @@ export class Client {
 
   private async getResBody(message: string) {
     try {
+      // todo: преобразовывать весь запрос в json { method, headers, body }
       const reqBody = JSON.parse(message);
       const resBody = await this.callHandler(reqBody);
       if (!resBody) throw new Error(`Empty response from handler.`);
@@ -74,7 +75,7 @@ export class Client {
     const { handler } = this.options;
     return typeof handler === 'function'
       ? handler(reqBody)
-      : proxyHttp(handler, reqBody);
+      : proxyHttp(handler, { method: 'POST', body: JSON.stringify(reqBody) });
   }
 
   private assertOptions() {

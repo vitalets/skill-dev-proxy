@@ -24,6 +24,7 @@ const proxySmarthomeReq = asyncHandler(async (req, res) => {
   } catch (e) {
     resBody = buildErrorBody(e);
   }
+  logger.log(`Response: ${JSON.stringify(resBody)}`);
   res.json(resBody);
 });
 
@@ -31,6 +32,7 @@ router.head('/', (_, res) => res.send());
 router.get('/user/devices', proxySmarthomeReq);
 router.post('/user/devices/query', proxySmarthomeReq);
 router.post('/user/devices/action', proxySmarthomeReq);
+router.post('/user/unlink', proxySmarthomeReq);
 
 function buildErrorBody(e: Error) {
   return {

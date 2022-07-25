@@ -14,11 +14,12 @@ router.get('/', (req, res) => {
 
 router.post('/token', (req, res) => {
   const resObj = {
-    access_token: `skill-dev-proxy-oauth-token-${Date.now()}`,
+    access_token: `skill-dev-proxy-oauth-token`,
     token_type: 'bearer',
     // expires_in: 4_000_000_000,
     // expires_in: 60,
     expires_in: 3600,
+    refresh_token: `skill-dev-proxy-oauth-refresh-token`
   };
   logger.log(`Got oauth token request: ${JSON.stringify(req.body)}`);
   logger.log(`Send oauth token response: ${JSON.stringify(resObj)}`);

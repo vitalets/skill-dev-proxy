@@ -3,7 +3,7 @@ import asyncHandler from 'express-async-handler';
 import { targetManager } from '../target-manager';
 import { handleUserMessage } from '../handler';
 import { router as oauthRouter } from '../smarthome/oauth';
-import { router as smarthomeRouter } from '../smarthome/router';
+import { router as smarthomeRouter } from '../smarthome/routes';
 
 export function setRoutes(app: Application) {
   app.use('/oauth', oauthRouter);

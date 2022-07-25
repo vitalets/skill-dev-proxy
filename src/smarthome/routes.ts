@@ -14,7 +14,13 @@ export const router = express.Router();
 // todo: use setting to convert to jsonrpc or not
 const useJsonRpc = true;
 
-const proxySmarthomeReq = (rpcType: JsonRpcRequest['request_type']) => {
+router.head('/', (_, res) => res.send());
+router.get('/user/devices', proxySmarthomeReq('discovery'));
+router.post('/user/devices/query', proxySmarthomeReq('query'));
+router.post('/user/devices/action', proxySmarthomeReq('action'));
+router.post('/user/unlink', proxySmarthomeReq('unlink'));
+
+function proxySmarthomeReq(rpcType: JsonRpcRequest['request_type']) {
   return asyncHandler(async (req, res) => {
     logger.log(`${req.method} ${req.url}: ${JSON.stringify(req.body)}`);
     logger.log(`Authorization: ${req.get('Authorization')}`);
@@ -33,13 +39,7 @@ const proxySmarthomeReq = (rpcType: JsonRpcRequest['request_type']) => {
     logger.log(`Response: ${JSON.stringify(resBody)}`);
     res.json(resBody);
   });
-};
-
-router.head('/', (_, res) => res.send());
-router.get('/user/devices', proxySmarthomeReq('discovery'));
-router.post('/user/devices/query', proxySmarthomeReq('query'));
-router.post('/user/devices/action', proxySmarthomeReq('action'));
-router.post('/user/unlink', proxySmarthomeReq('unlink'));
+}
 
 function buildErrorBody(e: Error) {
   return {

@@ -14,7 +14,7 @@ router.get('/', (req, res) => {
 
 router.post('/token', (req, res) => {
   const resObj = {
-    access_token: 'skill-dev-proxy-oauth-token',
+    access_token: `skill-dev-proxy-oauth-token-${Date.now()}`,
     token_type: 'bearer',
     // expires_in: 4_000_000_000,
     expires_in: 60,

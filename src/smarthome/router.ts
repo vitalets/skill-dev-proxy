@@ -7,15 +7,14 @@ import { IncomingHttpHeaders } from 'http';
 import { logger } from '../logger';
 import { proxyRequest } from '../proxy';
 import { isLocalhostTarget, targetManager } from '../target-manager';
+import { JsonRpcRequest } from './types';
 
 export const router = express.Router();
-
-type JsonRpcRequestType = 'discovery' | 'query' | 'action' | 'unlink';
 
 // todo: use setting to convert to jsonrpc or not
 const useJsonRpc = true;
 
-const proxySmarthomeReq = (rpcType: JsonRpcRequestType) => {
+const proxySmarthomeReq = (rpcType: JsonRpcRequest['request_type']) => {
   return asyncHandler(async (req, res) => {
     logger.log(`${req.method} ${req.url}: ${JSON.stringify(req.body)}`);
     logger.log(`Authorization: ${req.get('Authorization')}`);
@@ -58,14 +57,14 @@ function convertToFetchHeaders(reqHeaders: IncomingHttpHeaders) {
   return res;
 }
 
-function convertRestToJsonRpc(rpcType: JsonRpcRequestType, req: Request) {
+function convertRestToJsonRpc(rpcType: JsonRpcRequest['request_type'], req: Request): JsonRpcRequest {
   return {
     headers: {
-      request_id: req.get('X-Request-Id'),
-      authorization: req.get('Authorization'),
+      request_id: req.get('X-Request-Id')!,
+      authorization: req.get('Authorization')!,
     },
     request_type: rpcType,
-    payload: req.body,
+    payload: req.body.payload,
     api_version: '1.0'
   };
 }

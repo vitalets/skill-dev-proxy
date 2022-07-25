@@ -1,0 +1,22 @@
+{
+  "devices": [
+    {
+      "id": "abc-123",
+      "custom_data": {
+        "bar": "two",
+        "baz": false,
+        "foo": 1,
+        "quux": {
+          "quuz": {
+            "corge": []
+          }
+        },
+        "qux": [
+          1,
+          "two",
+          false
+        ]
+      }
+    }
+  ]
+}

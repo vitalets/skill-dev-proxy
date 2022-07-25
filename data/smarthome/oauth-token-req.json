@@ -1,0 +1,7 @@
+{
+  "code": "skill-dev-proxy-oauth-code",
+  "client_secret": "skill-dev-proxy-secret",
+  "grant_type": "authorization_code",
+  "client_id": "skill-dev-proxy",
+  "redirect_uri": "https://social.yandex.net/broker/redirect"
+}

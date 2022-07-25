@@ -37,10 +37,10 @@ const proxySmarthomeReq = (rpcType: JsonRpcRequestType) => {
 };
 
 router.head('/', (_, res) => res.send());
-router.get('/user/devices', proxySmarthomeReq);
-router.post('/user/devices/query', proxySmarthomeReq);
-router.post('/user/devices/action', proxySmarthomeReq);
-router.post('/user/unlink', proxySmarthomeReq);
+router.get('/user/devices', proxySmarthomeReq('discovery'));
+router.post('/user/devices/query', proxySmarthomeReq('query'));
+router.post('/user/devices/action', proxySmarthomeReq('action'));
+router.post('/user/unlink', proxySmarthomeReq('unlink'));
 
 function buildErrorBody(e: Error) {
   return {

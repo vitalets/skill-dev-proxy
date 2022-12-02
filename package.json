@@ -16,6 +16,7 @@
     "check": "tsnd --respawn scripts/check",
     "check:h": "tsnd --respawn scripts/check-smarthome",
     "build": "rm -rf dist && tsc -p tsconfig.build.json && cp src/smarthome/oauth.html dist/smarthome/",
+    "deploy:yc": "npm run lint && npm t && npm run build && deploy-fn",
     "deploy:heroku": "git push heroku",
     "logs": "heroku logs --tail",
     "release": "npm run lint && npm t && npm run build && np --yolo --no-release-draft"
@@ -38,7 +39,8 @@
     "express-async-handler": "^1.2.0",
     "node-fetch": "^2.6.2",
     "uni-skill": "^3.0.4",
-    "websocket": "^1.0.34"
+    "websocket": "^1.0.34",
+    "yandex-cloud-fn": "^2.5.1"
   },
   "devDependencies": {
     "@types/chai": "^4.2.22",
@@ -62,7 +64,8 @@
     "sinon": "^12.0.1",
     "ts-node": "^10.4.0",
     "ts-node-dev": "^1.1.8",
-    "typescript": "^4.4.4"
+    "typescript": "^4.4.4",
+    "yandex-cloud-deploy-fn": "^2.0.0"
   },
   "author": {
     "name": "Vitaliy Potapov"

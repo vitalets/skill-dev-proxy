@@ -3,6 +3,8 @@
 // const dotenv = require('dotenv');
 // const envProd = dotenv.parse(fs.readFileSync(path.resolve(__dirname, './.env.prod')));
 
+const targets = require('./.env.targets.js');
+
 module.exports = {
   useCliConfig: true,
   functionName: 'skill-dev-proxy',
@@ -15,6 +17,7 @@ module.exports = {
     account: 'skill-dev-proxy-sa',
     environment: {
       NODE_ENV: 'production',
+      TARGETS: JSON.stringify(targets),
       //YDB_NAME: envProd.YDB_NAME,
     },
   },

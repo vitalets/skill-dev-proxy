@@ -1,3 +1,7 @@
+/**
+ * Target manager (singleton).
+ */
+
 export interface Target {
   name: string;
   regexp?: RegExp;

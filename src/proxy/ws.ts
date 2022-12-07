@@ -5,7 +5,6 @@ import { once } from 'events';
 import { IUtf8Message } from 'websocket';
 import { server } from '../server/server';
 import { RequestInit } from 'node-fetch';
-// import AbortController from 'abort-controller';
 
 let ac: AbortController;
 

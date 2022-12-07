@@ -33,14 +33,10 @@ export class Client {
   }
 
   async run() {
-    this.logger.log('Connecting...');
-    this.ws.connect(this.options.wsUrl);
-    this.wsConnection = (await once(this.ws, 'connect'))[0] as Connection;
-    this.logger.log('Connected.');
+    this.wsConnection = await this.connect();
     this.wsConnection.on('error', e => this.logger.error(e));
     this.wsConnection.on('message', message => message.type === 'utf8' && this.handleMessage(message.utf8Data));
     this.wsConnection.on('close', () => this.logger.log('Disconnected.'));
-    // todo: connectFailed
   }
 
   async close() {
@@ -49,6 +45,19 @@ export class Client {
       await once(this.wsConnection, 'close');
       this.wsConnection = undefined;
     }
+  }
+
+  private async connect() {
+    this.logger.log('Connecting...');
+    const ac = new AbortController();
+    this.ws.connect(this.options.wsUrl);
+    this.ws.on('connectFailed', e => {
+      this.logger.error(e);
+      ac.abort();
+    });
+    const connections = await once(this.ws, 'connect', { signal: ac.signal });
+    this.logger.log('Connected.');
+    return connections[0] as Connection;
   }
 
   private async handleMessage(message = '') {

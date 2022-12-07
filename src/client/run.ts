@@ -8,6 +8,7 @@ export async function runClient(options: ClientOptions) {
   process.on('unhandledRejection', handleRejection);
   client = new Client(options);
   await client.run();
+  return client; // for debug
 }
 
 async function shutdown(reason: string, exitCode = 0) {

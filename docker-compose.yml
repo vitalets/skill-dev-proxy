@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      target: dev
+    command: npx ts-node-dev --respawn src/server/run
+    ports:
+      - "3000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      PORT: 3000
+      TARGETS: '[{"name": "Навык 1", "url": "https://my-webhook.ru"}]'
+      DEBUG:

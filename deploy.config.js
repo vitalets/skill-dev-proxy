@@ -1,9 +1,9 @@
-// const fs = require('fs');
+const fs = require('fs');
 // const path = require('path');
 // const dotenv = require('dotenv');
 // const envProd = dotenv.parse(fs.readFileSync(path.resolve(__dirname, './.env.prod')));
 
-const targets = require('./.env.targets.js');
+const targets = JSON.parse(fs.readFileSync('.env.targets.json', 'utf8'));
 
 module.exports = {
   useCliConfig: true,

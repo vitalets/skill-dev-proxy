@@ -1,3 +1,11 @@
+/**
+ * Voice request handler.
+ */
+
+// Make ts-node happy
+// See: https://github.com/TypeStrong/ts-node#help-my-types-are-missing
+/// <reference types="./externals" />
+
 import { Response, AliceResponse } from 'uni-skill';
 import { logger } from './logger';
 import { Ctx } from './ctx';

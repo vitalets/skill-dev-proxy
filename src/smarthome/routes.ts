@@ -1,8 +1,7 @@
 /**
  * See: https://yandex.ru/dev/dialogs/smart-home/doc/reference/resources.html
  */
-import express, { Request } from 'express';
-import asyncHandler from 'express-async-handler';
+import express, { Request, RequestHandler } from 'express';
 import { IncomingHttpHeaders } from 'http';
 import { logger } from '../logger';
 import { proxyRequest } from '../proxy';
@@ -20,8 +19,8 @@ router.post('/user/devices/query', proxySmarthomeReq('query'));
 router.post('/user/devices/action', proxySmarthomeReq('action'));
 router.post('/user/unlink', proxySmarthomeReq('unlink'));
 
-function proxySmarthomeReq(rpcType: JsonRpcRequest['request_type']) {
-  return asyncHandler(async (req, res) => {
+function proxySmarthomeReq(rpcType: JsonRpcRequest['request_type']): RequestHandler {
+  return async (req, res) => {
     logger.log(`${req.method} ${req.url}: ${JSON.stringify(req.body)}`);
     logger.log(`Authorization: ${req.get('Authorization')}`);
     let resBody: Record<string, unknown>;
@@ -38,7 +37,7 @@ function proxySmarthomeReq(rpcType: JsonRpcRequest['request_type']) {
     }
     logger.log(`Response: ${JSON.stringify(resBody)}`);
     res.json(resBody);
-  });
+  };
 }
 
 function buildErrorBody(e: Error) {

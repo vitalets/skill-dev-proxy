@@ -41,7 +41,6 @@
     "console-log-level": "^1.4.1",
     "cors": "^2.8.5",
     "express": "^4.18.2",
-    "express-async-handler": "^1.2.0",
     "node-fetch": "^2.6.2",
     "uni-skill": "^3.0.4",
     "websocket": "^1.0.34",

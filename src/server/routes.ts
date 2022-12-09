@@ -1,5 +1,4 @@
 import { Application, RequestHandler } from 'express';
-import asyncHandler from 'express-async-handler';
 import { targetManager } from '../target-manager';
 import { handleUserMessage } from '../handler';
 import { router as oauthRouter } from '../smarthome/oauth';
@@ -17,7 +16,7 @@ const showTargets: RequestHandler = (req, res) => {
   res.send(`Работает. Таргеты: ${targetNames}`);
 };
 
-const skillHandler: RequestHandler = asyncHandler(async (req, res) => {
+const skillHandler: RequestHandler = (async (req, res) => {
   const resBody = await handleUserMessage(req.body);
   res.json(resBody);
 });

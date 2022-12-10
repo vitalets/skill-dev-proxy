@@ -1,3 +1,4 @@
+require('dotenv/config');
 const fs = require('fs');
 // const path = require('path');
 // const dotenv = require('dotenv');
@@ -18,6 +19,7 @@ module.exports = {
     environment: {
       NODE_ENV: 'production',
       TARGETS: JSON.stringify(targets),
+      AMQP_URL: process.env.AMQP_URL,
       //YDB_NAME: envProd.YDB_NAME,
     },
   },

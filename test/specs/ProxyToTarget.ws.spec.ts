@@ -3,7 +3,8 @@ import { createRequest, createResponse } from 'uni-skill';
 import { Client } from '../../src/client/client';
 import { ProxyToTarget } from '../../src/components/ProxyToTarget';
 
-describe('ProxyToTarget (ws)', () => {
+// skipped as used amqp transfer
+describe.skip('ProxyToTarget (ws)', () => {
 
   let client: Client;
 

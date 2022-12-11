@@ -24,10 +24,10 @@ export class State {
   }
 
   async load() {
-    this.data = await this.manager.load();
+    this.data = await this.manager.load() || {};
   }
 
   async save() {
-    this.manager.save(this.data);
+    await this.manager.save(this.data);
   }
 }

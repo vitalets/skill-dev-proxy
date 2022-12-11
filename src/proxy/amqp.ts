@@ -7,9 +7,6 @@ import amqplib from 'amqplib';
 import { RequestInit } from 'node-fetch';
 import { logger } from '../logger';
 
-// temp
-process.once('SIGINT', () => logger.log('got SIGINT'));
-
 const { AMQP_URL = '' } = process.env;
 
 let conn: amqplib.Connection;
@@ -17,8 +14,8 @@ let channel: amqplib.Channel;
 export const reqQueue = 'request';
 export const resQueue = 'response';
 
-export async function assertConnection() {
-    conn = conn || await amqplib.connect(AMQP_URL);
+export async function assertConnection(amqpUrl?: string) {
+    conn = conn || await amqplib.connect(amqpUrl || AMQP_URL);
     channel = channel || await conn.createChannel();
     return channel;
 }
@@ -72,6 +69,7 @@ async function getConsumerCount() {
         const res = await channel.checkQueue(reqQueue);
         return res.consumerCount;
     } catch (e) {
+        logger.log(e.stack);
         return 0;
     }
 }

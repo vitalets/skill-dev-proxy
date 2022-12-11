@@ -1,0 +1,14 @@
+{
+  "response": {
+    "text": "Привет",
+    "tts": "Привет",
+    "end_session": false,
+    "buttons": [
+      {
+        "hide": true,
+        "title": "кнопка"
+      }
+    ]
+  },
+  "version": "1.0"
+}

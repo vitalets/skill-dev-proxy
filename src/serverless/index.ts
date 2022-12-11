@@ -6,7 +6,6 @@ import {
   getHttpBody,
   Context,
 } from 'yandex-cloud-fn';
-import { logger } from '../logger';
 import { targetManager } from '../target-manager';
 import { handleUserMessage, ReqInfo } from '../handler';
 import { config } from '../config';
@@ -17,7 +16,7 @@ targetManager.init(config.targets);
 
 export const handler: Handler<HttpRequest> = async (event, context) => {
   try {
-    logger.log(event);
+    // logger.log(event);
     if (event.httpMethod === 'GET') {
       return showTargets();
     }

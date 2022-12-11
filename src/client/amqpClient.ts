@@ -33,8 +33,9 @@ export class AmqpClient {
   }
 
   async run() {
-    this.channel = await assertConnection(this.options.amqpUrl);
-    await this.channel.assertQueue(reqQueue);
+    const conn = await assertConnection(this.options.amqpUrl);
+    this.channel = await conn.createChannel();
+    await this.channel.assertQueue(reqQueue, { durable: true });
     this.logger.log(`Waiting messages in queue: ${reqQueue}`);
     await this.channel.consume(reqQueue, async msg => {
       if (msg !== null) {
@@ -46,6 +47,7 @@ export class AmqpClient {
   }
 
   async close() {
+    await this.channel?.close();
     await closeConnection();
   }
 

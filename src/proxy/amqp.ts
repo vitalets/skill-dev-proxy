@@ -1,6 +1,8 @@
 /**
  * Proxy via amqp server.
  * API ref: https://amqp-node.github.io/amqplib/channel_api.html#flowcontrol
+ *
+ * Often getting delay more than 3 sec :(
  */
 
 import amqplib from 'amqplib';
@@ -10,29 +12,32 @@ import { logger } from '../logger';
 const { AMQP_URL = '' } = process.env;
 
 let conn: amqplib.Connection;
-let channel: amqplib.Channel;
 export const reqQueue = 'request';
 export const resQueue = 'response';
 
 export async function assertConnection(amqpUrl?: string) {
     conn = conn || await amqplib.connect(amqpUrl || AMQP_URL);
-    channel = channel || await conn.createChannel();
-    return channel;
+    return conn;
 }
 
 export async function closeConnection() {
-    await channel?.close();
     await conn?.close();
 }
 
 // todo: преобразовывать весь запрос в json { method, headers, body }
 export async function proxyAmqp({ body }: RequestInit) {
     if (typeof body !== 'string') throw new Error(`Can't proxy this body to ws`);
-    const channel = await assertConnection();
-    await assertClientConnected();
+    const conn = await assertConnection();
+    const channel = await conn.createChannel();
+    await assertClientConnected(channel);
     await channel.assertQueue(resQueue);
     channel.sendToQueue(reqQueue, Buffer.from(body));
-    return waitJsonFromClient(resQueue);
+    try {
+        return await waitJsonFromClient(channel, resQueue);
+    } finally {
+        channel?.close().catch(e => logger.log(e));
+    }
+
     // todo: timeout
     // try {
     //   return await waitJsonFromClient();
@@ -41,14 +46,14 @@ export async function proxyAmqp({ body }: RequestInit) {
     // }
 }
 
-async function assertClientConnected() {
-    const consumerCount = await getConsumerCount();
+async function assertClientConnected(channel: amqplib.Channel) {
+    const consumerCount = await getConsumerCount(channel);
     if (!consumerCount) {
         throw new Error('Нет получателей! Нужно запустить скрипт на локалхосте.');
     }
 }
 
-async function waitJsonFromClient(queue: string) {
+async function waitJsonFromClient(channel: amqplib.Channel, queue: string) {
     const { promise, resolve, reject } = createPromise();
     const { consumerTag } = await channel.consume(queue, (msg) => {
         if (msg !== null) {
@@ -64,13 +69,13 @@ async function waitJsonFromClient(queue: string) {
     return promise;
 }
 
-async function getConsumerCount() {
+async function getConsumerCount(channel: amqplib.Channel) {
     try {
         const res = await channel.checkQueue(reqQueue);
         return res.consumerCount;
     } catch (e) {
-        logger.log(e.stack);
-        return 0;
+        if (e.message.includes('NOT-FOUND')) return 0;
+        throw e;
     }
 }
 

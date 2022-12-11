@@ -45,7 +45,8 @@
     "node-fetch": "^2.6.2",
     "uni-skill": "^3.0.4",
     "websocket": "^1.0.34",
-    "yandex-cloud-fn": "^2.5.5"
+    "yandex-cloud-fn": "^2.5.5",
+    "ydb-sdk-lite": "^2.1.0"
   },
   "devDependencies": {
     "@types/amqplib": "^0.10.0",

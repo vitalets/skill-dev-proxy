@@ -1,11 +1,10 @@
 import { reply, text, tts, buttons } from 'alice-renderer';
-import { targetManager } from './target-manager';
 import { logger } from './logger';
 
-export function errorHandler(e: Error) {
+export function errorHandler(e: Error, targetName?: string) {
   logger.error(e);
   const ttsMessage = hasRussianLetters(e.message) ? e.message : 'Ошибка';
-  const textMessage = `${getTargetMsg()} ${getErrorMsg(e)}`;
+  const textMessage = `(target: ${targetName || 'none'}) ${getErrorMsg(e)}`;
   return reply`
     ${tts(ttsMessage)}
     ${text(textMessage)}
@@ -15,11 +14,6 @@ export function errorHandler(e: Error) {
 
 function getErrorMsg(e: Error) {
   return (e.stack || e.message).split('\n').slice(0, 2).join('\n');
-}
-
-function getTargetMsg() {
-  const targetName = targetManager.selectedTarget?.name || 'none';
-  return `(target: ${targetName})`;
 }
 
 function hasRussianLetters(s: string) {

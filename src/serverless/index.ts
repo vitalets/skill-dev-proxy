@@ -4,24 +4,26 @@ import {
   sendJson,
   fixConsoleForLogging,
   getHttpBody,
+  Context,
 } from 'yandex-cloud-fn';
 import { logger } from '../logger';
 import { targetManager } from '../target-manager';
-import { handleUserMessage } from '../handler';
+import { handleUserMessage, ReqInfo } from '../handler';
 import { config } from '../config';
 
 fixConsoleForLogging();
 
 targetManager.init(config.targets);
 
-export const handler: Handler<HttpRequest> = async event => {
+export const handler: Handler<HttpRequest> = async (event, context) => {
   try {
     logger.log(event);
     if (event.httpMethod === 'GET') {
       return showTargets();
     }
+    const reqInfo = getReqInfo(context);
     const reqBody = JSON.parse(getHttpBody(event));
-    const resBody = await handleUserMessage(reqBody);
+    const resBody = await handleUserMessage(reqBody, reqInfo);
     return sendJson(resBody);
   } catch (e) {
     throw attachEventToError(e, event);
@@ -36,6 +38,14 @@ function showTargets() {
     headers: {
       'Content-Type': 'text/plain; charset="UTF-8"'
     }
+  };
+}
+
+function getReqInfo(context: Context): ReqInfo {
+  return {
+    reqId: context.requestId,
+    functionId: context.functionName,
+    iamToken: context.token?.access_token || '',
   };
 }
 

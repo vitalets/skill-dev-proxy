@@ -1,14 +1,16 @@
 import { reply, buttons } from 'alice-renderer';
-import { targetManager } from '../target-manager';
+import { Target, targetManager } from '../target-manager';
 import { logger } from '../logger';
 import { Component } from './Component';
 
 export class SetTarget extends Component {
+  target?: Target;
+
   match() {
-    const target = targetManager.matchTarget(this.ctx.userMessage);
-    if (target) {
-      logger.log(`SET TARGET: ${target.name}`);
-      targetManager.selectedTarget = target;
+    this.target = targetManager.matchTarget(this.ctx.userMessage);
+    if (this.target) {
+      logger.log(`SET TARGET: ${this.target.name}`);
+      this.ctx.state.selectedTarget = this.target.name;
       this.clearState();
       return true;
     }
@@ -16,7 +18,7 @@ export class SetTarget extends Component {
 
   async reply() {
     return reply`
-      Выбран таргет ${targetManager.selectedTarget!.name}.
+      Выбран таргет ${this.target!.name}.
       ${buttons([ 'Поехали' ])}
     `;
   }

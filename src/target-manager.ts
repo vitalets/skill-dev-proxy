@@ -12,16 +12,21 @@ type EnvTarget = Omit<Target, 'regexp'> & { regexp?: string };
 
 class TargetManager {
   targets: Target[] = [];
-  selectedTarget: Target | null = null;
 
   init(strTargets: string) {
     this.targets = this.parseTargets(strTargets);
-    this.selectedTarget = null;
+  }
+
+  getTarget(name: string) {
+    const target = this.targets.find(target => target.name === name);
+    if (!target) throw new Error(`Не найден таргет: ${name}`);
+    return target;
   }
 
   matchTarget(userMessage: string) {
     return this.targets.find(target => {
-      return userMessage.includes(target.name.toLowerCase()) || (target.regexp && target.regexp.test(userMessage));
+      return userMessage.includes(target.name.toLowerCase())
+        || (target.regexp && target.regexp.test(userMessage));
     });
   }
 

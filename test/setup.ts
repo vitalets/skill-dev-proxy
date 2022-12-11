@@ -9,6 +9,7 @@ import getPort from 'get-port';
 import User from 'alice-tester';
 import { server } from '../src/server/server';
 import { targetManager } from '../src/target-manager';
+import { memoryState } from '../src/state/memory';
 
 type AssertType = typeof chai.assert;
 type UserType = typeof User;
@@ -43,9 +44,10 @@ beforeEach(() => {
   targetManager.init(JSON.stringify(targets));
 });
 
-afterEach(() => {
+afterEach(async () => {
   nock.cleanAll();
   sinon.restore();
+  await memoryState.save({});
 });
 
 after(async () => {

@@ -18,6 +18,12 @@ import { ProxyToTarget } from './components/ProxyToTarget';
 
 type AliceResBody = AliceResponse['body'];
 
+export interface ReqInfo {
+  reqId: string;
+  functionId: string;
+  iamToken: string;
+}
+
 const Components = [
   PingPong,
   SetTarget,
@@ -26,21 +32,24 @@ const Components = [
   ShowTargets, // <- default component
 ];
 
-export async function handleUserMessage(reqBody: unknown): Promise<Response['body']> {
+export async function handleUserMessage(reqBody: unknown, reqInfo: ReqInfo): Promise<Response['body']> {
   logger.log(`REQUEST: ${JSON.stringify(reqBody)}`);
-  const resBody = await buildResBody(reqBody);
+  const resBody = await buildResBody(reqBody, reqInfo);
   logger.log(`RESPONSE: ${JSON.stringify(resBody)}`);
   return resBody;
 }
 
-async function buildResBody(reqBody: unknown) {
-  const ctx = new Ctx(reqBody);
+async function buildResBody(reqBody: unknown, reqInfo: ReqInfo) {
+  const ctx = new Ctx(reqBody, reqInfo);
   logger.log(`PLATFORM: ${getPlatform(ctx)}`);
   try {
+    await ctx.stateManager.load();
     await runComponents(ctx);
   } catch (e) {
-    const response = errorHandler(e) as AliceResBody['response'];
+    const response = errorHandler(e, ctx.state.selectedTarget) as AliceResBody['response'];
     convertAliceResponseToUniversal(response, ctx.response);
+  } finally {
+    await ctx.stateManager.save();
   }
   return ctx.response.body;
 }

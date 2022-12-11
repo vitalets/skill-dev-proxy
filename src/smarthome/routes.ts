@@ -5,7 +5,7 @@ import express, { Request, RequestHandler } from 'express';
 import { IncomingHttpHeaders } from 'http';
 import { logger } from '../logger';
 import { proxyRequest } from '../proxy';
-import { isLocalhostTarget, targetManager } from '../target-manager';
+import { targetManager } from '../target-manager';
 import { JsonRpcRequest } from './types';
 
 export const router = express.Router();
@@ -25,9 +25,10 @@ function proxySmarthomeReq(rpcType: JsonRpcRequest['request_type']): RequestHand
     logger.log(`Authorization: ${req.get('Authorization')}`);
     let resBody: Record<string, unknown>;
     try {
-      selectLocalhostTarget();
+      // пока всегда выбираем localhost при запросах умного дома
+      const target = targetManager.getTarget('Локалхост');
       const reqBody = useJsonRpc ? convertRestToJsonRpc(rpcType, req) : req.body;
-      resBody = await proxyRequest({
+      resBody = await proxyRequest(target, {
         method: req.method,
         headers: convertToFetchHeaders(req.headers),
         body: JSON.stringify(reqBody),
@@ -66,11 +67,4 @@ function convertRestToJsonRpc(rpcType: JsonRpcRequest['request_type'], req: Requ
     payload: req.body.payload,
     api_version: '1.0'
   };
-}
-
-// пока всегда выбираем localhost при запросах умного дома
-function selectLocalhostTarget() {
-  if (!isLocalhostTarget(targetManager.selectedTarget)) {
-    targetManager.selectedTarget = targetManager.targets.find(target => isLocalhostTarget(target)) || null;
-  }
 }

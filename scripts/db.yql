@@ -1,0 +1,10 @@
+-- temporary data (ttl 1h)
+CREATE TABLE `skill-dev-proxy/state` (
+  ownerId String,
+  updatedAt Timestamp,
+  data JsonDocument,
+  PRIMARY KEY (ownerId),
+  INDEX updatedAtIndex GLOBAL ON (updatedAt)
+) WITH (
+  TTL = Interval("PT1H") ON updatedAt
+);

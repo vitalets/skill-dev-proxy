@@ -6,11 +6,12 @@ export class ProxyToTarget extends Component {
   static TIMEOUT = 2800;
 
   match() {
-    return Boolean(targetManager.selectedTarget);
+    return Boolean(this.ctx.state.selectedTarget);
   }
 
   async reply() {
-    this.ctx.response.body = await proxyRequest({
+    const target = targetManager.getTarget(this.ctx.state.selectedTarget!);
+    this.ctx.response.body = await proxyRequest(target, {
       method: 'POST',
       headers: {
         'Accept': 'application/json',

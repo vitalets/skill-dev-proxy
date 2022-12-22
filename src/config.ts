@@ -4,4 +4,5 @@ export const config = {
   logLevel: process.env.LOG_LEVEL || 'info',
   ydbName: process.env.YDB_NAME || '',
   ydbPath: 'skill-dev-proxy',
+  amqpUrl: process.env.AMQP_URL || '',
 };

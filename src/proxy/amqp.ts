@@ -8,15 +8,14 @@
 import amqplib from 'amqplib';
 import { RequestInit } from 'node-fetch';
 import { logger } from '../logger';
-
-const { AMQP_URL = '' } = process.env;
+import { config } from '../config';
 
 let conn: amqplib.Connection;
 export const reqQueue = 'request';
 export const resQueue = 'response';
 
 export async function assertConnection(amqpUrl?: string) {
-    conn = conn || await amqplib.connect(amqpUrl || AMQP_URL);
+    conn = conn || await amqplib.connect(amqpUrl || config.amqpUrl);
     return conn;
 }
 

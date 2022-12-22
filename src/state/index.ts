@@ -18,8 +18,9 @@ export class State {
   private manager: IState;
 
   constructor(ctx: Ctx) {
+    const { functionId: ownerId, iamToken } = ctx.reqInfo;
     this.manager = isYandexCloudEnv
-      ? new YdbState({ ownerId: ctx.reqInfo.functionId, iamToken: ctx.reqInfo.iamToken })
+      ? new YdbState({ ownerId, iamToken })
       : memoryState;
   }
 

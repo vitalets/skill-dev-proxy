@@ -32,6 +32,10 @@ function proxySmarthomeReq(rpcType: JsonRpcRequest['request_type']): RequestHand
         method: req.method,
         headers: convertToFetchHeaders(req.headers),
         body: JSON.stringify(reqBody),
+      }, {
+        timeout: 5000,
+        iamToken: '',
+        reqId: '',
       });
     } catch (e) {
       resBody = buildErrorBody(e);

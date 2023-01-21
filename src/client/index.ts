@@ -1,18 +1,18 @@
 import { AmqpClient, AmqpClientOptions } from './amqpClient';
-import { Client, ClientOptions } from './client';
+import { YaCloudClient, YaCloudClientOptions } from './yaCloudClient';
 
 export {
-  Client,
   AmqpClient,
+  YaCloudClient,
 };
 
-let client: Client | AmqpClient;
+let client: YaCloudClient | AmqpClient;
 
-export async function runClient(options: ClientOptions | AmqpClientOptions) {
+export async function runClient(options: AmqpClientOptions | YaCloudClientOptions) {
   listenExitSignals();
-  client = 'amqpUrl' in options
+   client = 'amqpUrl' in options
     ? new AmqpClient(options)
-    : new Client(options);
+    : new YaCloudClient(options);
   await client.run();
   return client; // for debug
 }

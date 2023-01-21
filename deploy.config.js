@@ -19,8 +19,10 @@ module.exports = {
     environment: {
       NODE_ENV: 'production',
       TARGETS: JSON.stringify(targets),
-      AMQP_URL: process.env.AMQP_URL,
+      // AMQP_URL: process.env.AMQP_URL,
       YDB_NAME: process.env.YDB_NAME,
+      STUB_WS_URL: process.env.STUB_WS_URL,
+      LIVE_DEBUG_YDB_NAME: process.env.LIVE_DEBUG_YDB_NAME,
     },
   },
 };

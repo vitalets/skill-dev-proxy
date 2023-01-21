@@ -18,6 +18,10 @@ export class ProxyToTarget extends Component {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(this.ctx.request.body),
-    }, { timeout: ProxyToTarget.TIMEOUT });
+    }, {
+      timeout: ProxyToTarget.TIMEOUT,
+      iamToken: this.ctx.reqInfo.iamToken,
+      reqId: this.ctx.reqInfo.reqId,
+    });
   }
 }
